@@ -1,5 +1,6 @@
 package com.matin.noora.core.domain.usecase
 
+import com.matin.noora.core.common.Result
 import com.matin.noora.core.domain.AIRepository
 import com.matin.noora.core.domain.PromptAnalyzer
 import com.matin.noora.core.domain.model.Prompt
@@ -24,7 +25,7 @@ class GenerateTextUseCaseTest {
         val rawPrompt = Prompt(value = "Valid prompt")
         val category = PromptCategory.GENERAL
         val promptRequest = mockk<PromptRequest>()
-        val expectedResponse = mockk<TextAIResponse>()
+        val expectedResponse = mockk<Result<TextAIResponse>>()
 
         every { promptAnalyzer.createPromptRequest(rawPrompt.value, category) } returns promptRequest
         coEvery { aiRepository.getTextResponse(promptRequest) } returns expectedResponse
