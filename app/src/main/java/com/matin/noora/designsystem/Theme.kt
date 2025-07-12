@@ -1,6 +1,5 @@
-package com.matin.noora.ui.theme
+package com.matin.noora.designsystem
 
-import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme

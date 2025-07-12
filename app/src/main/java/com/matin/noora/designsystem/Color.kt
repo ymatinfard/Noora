@@ -1,4 +1,4 @@
-package com.matin.noora.ui.theme
+package com.matin.noora.designsystem
 
 import androidx.compose.ui.graphics.Color
 
