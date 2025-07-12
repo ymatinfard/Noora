@@ -54,6 +54,8 @@ dependencies {
     implementation(libs.android.hilt)
     ksp(libs.android.hilt.compiler)
     implementation(libs.androidx.hilt.navigation.compose)
+    implementation(libs.retrofit)
+    implementation(libs.gson)
 
     testImplementation(libs.mockk)
     testImplementation(libs.kotlinx.coroutines.test)
