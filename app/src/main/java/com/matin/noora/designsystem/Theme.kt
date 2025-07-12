@@ -10,33 +10,41 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 
-private val DarkColorScheme = darkColorScheme(
-    primary = Purple80,
-    secondary = PurpleGrey80,
-    tertiary = Pink80
+private val LightColorScheme = darkColorScheme(
+    primary = CornflowerBlue,
+    onPrimary = OnCornflowerBlue,
+    primaryContainer = LightCornflowerBlue,
+    onPrimaryContainer = CornflowerBlue,
+    secondary = CornflowerBlue,
+    onSecondary = OnCornflowerBlue,
+    background = SurfaceBackground,
+    onBackground = TextPrimary,
+    surface = SurfaceBackground,
+    onSurface = TextPrimary,
+    surfaceVariant = CardBackground,
+    outline = TextSecondary
 )
 
-private val LightColorScheme = lightColorScheme(
-    primary = Purple40,
-    secondary = PurpleGrey40,
-    tertiary = Pink40
-
-    /* Other default colors to override
-    background = Color(0xFFFFFBFE),
-    surface = Color(0xFFFFFBFE),
-    onPrimary = Color.White,
-    onSecondary = Color.White,
-    onTertiary = Color.White,
-    onBackground = Color(0xFF1C1B1F),
-    onSurface = Color(0xFF1C1B1F),
-    */
+private val DarkColorScheme = lightColorScheme(
+    primary = CornflowerBlueDark,
+    onPrimary = OnCornflowerBlueDark,
+    primaryContainer = LightCornflowerBlueDark,
+    onPrimaryContainer = CornflowerBlueDark,
+    secondary = CornflowerBlueDark,
+    onSecondary = OnCornflowerBlueDark,
+    background = SurfaceBackgroundDark,
+    onBackground = TextPrimaryDark,
+    surface = SurfaceBackgroundDark,
+    onSurface = TextPrimaryDark,
+    surfaceVariant = CardBackgroundDark,
+    outline = TextSecondaryDark
 )
 
 @Composable
 fun NooraTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = true,
+    dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {
