@@ -5,8 +5,9 @@ import com.matin.noora.core.domain.PromptAnalyzer
 import com.matin.noora.core.domain.model.TextAIResponse
 import com.matin.noora.core.domain.model.Prompt
 import com.matin.noora.core.domain.model.PromptCategory
+import javax.inject.Inject
 
-class GenerateTextUseCase(
+class GenerateTextUseCase @Inject constructor(
     private val aiRepository: AIRepository,
     private val promptAnalyzer: PromptAnalyzer
 ) {
