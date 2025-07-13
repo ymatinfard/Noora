@@ -21,8 +21,8 @@ private val LightColorScheme = darkColorScheme(
     onBackground = TextPrimary,
     surface = SurfaceBackground,
     onSurface = TextPrimary,
-    surfaceVariant = CardBackground,
-    outline = TextSecondary
+    outline = TextSecondary,
+    surfaceContainerHighest = CardBackground
 )
 
 private val DarkColorScheme = lightColorScheme(
@@ -37,7 +37,8 @@ private val DarkColorScheme = lightColorScheme(
     surface = SurfaceBackgroundDark,
     onSurface = TextPrimaryDark,
     surfaceVariant = CardBackgroundDark,
-    outline = TextSecondaryDark
+    outline = TextSecondaryDark,
+    surfaceContainerHighest = CardBackgroundDark
 )
 
 @Composable
