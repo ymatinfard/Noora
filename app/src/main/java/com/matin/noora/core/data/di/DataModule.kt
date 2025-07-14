@@ -1,8 +1,12 @@
 package com.matin.noora.core.data.di
 
+import com.matin.noora.core.data.local.ChatLocalRepositoryImpl
+import com.matin.noora.core.data.local.SettingsRepositoryImpl
 import com.matin.noora.core.data.remote.AIRepositoryImpl
 import com.matin.noora.core.data.remote.GenAIApi
-import com.matin.noora.core.domain.AIRepository
+import com.matin.noora.core.domain.repository.AIRepository
+import com.matin.noora.core.domain.repository.ChatLocalRepository
+import com.matin.noora.core.domain.repository.SettingsRepository
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -19,6 +23,14 @@ interface DataBindModule {
     @Binds
     @Singleton
     fun bindAIRepository(impl: AIRepositoryImpl): AIRepository
+
+    @Binds
+    @Singleton
+    fun bindChatLocalRepository(impl: ChatLocalRepositoryImpl): ChatLocalRepository
+
+    @Binds
+    @Singleton
+    fun bindSettingsRepository(impl: SettingsRepositoryImpl): SettingsRepository
 }
 
 @Module
