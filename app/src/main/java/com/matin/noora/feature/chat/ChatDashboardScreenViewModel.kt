@@ -4,10 +4,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.matin.noora.core.common.Result
 import com.matin.noora.core.common.asResult
+import com.matin.noora.core.domain.model.ChatItemSummary
+import com.matin.noora.core.domain.model.UserScore
+import com.matin.noora.core.domain.repository.AIRepository
 import com.matin.noora.core.domain.repository.ChatLocalRepository
 import com.matin.noora.core.domain.repository.SettingsRepository
-import com.matin.noora.core.domain.model.ChatRecentHistoryItem
-import com.matin.noora.core.domain.model.UserScore
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
 import kotlinx.coroutines.flow.SharingStarted
@@ -18,6 +19,7 @@ import kotlinx.coroutines.flow.stateIn
 @HiltViewModel
 class ChatDashboardScreenViewModel @Inject constructor(
     private val chatLocalRepository: ChatLocalRepository,
+    private val aiRepository: AIRepository,
     private val settingsRepository: SettingsRepository
 ) : ViewModel() {
 
@@ -45,22 +47,46 @@ class ChatDashboardScreenViewModel @Inject constructor(
         .asResult()
         .map { result ->
             when (result) {
-                is Result.Success -> ChatRecentHistoryState.Success(result.data)
-                is Result.Error -> ChatRecentHistoryState.Error(
+                is Result.Success -> ChatCharactersState.Success(result.data)
+                is Result.Error -> ChatCharactersState.Error(
                     result.exception.message ?: "Unknown error"
                 )
 
-                Result.Loading -> ChatRecentHistoryState.Loading
+                Result.Loading -> ChatCharactersState.Loading
             }
         }
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(WHILE_SUBSCRIBED_TIMEOUT_MS),
-            initialValue = ChatRecentHistoryState.Loading
+            initialValue = ChatCharactersState.Loading
         )
 
-    fun onChatRecentHistoryItemClicked(chatHistoryItem: ChatRecentHistoryItem) {
+    val chatCharacters = aiRepository
+        .getChatCharacters()
+        .asResult()
+        .map { result ->
+            when (result) {
+                is Result.Success -> ChatCharactersState.Success(result.data.map { it.toSummary() })
+                is Result.Error -> ChatCharactersState.Error(
+                    result.exception.message ?: "Unknown error"
+                )
+
+                Result.Loading -> ChatCharactersState.Loading
+            }
+        }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(WHILE_SUBSCRIBED_TIMEOUT_MS),
+            initialValue = ChatCharactersState.Loading
+        )
+
+    fun onChatRecentHistoryItemClicked(chatHistoryItem: ChatItemSummary) {
         // Handle click on chat history item
+        // This could navigate to a chat screen with the selected character
+    }
+
+    fun onChatCharacterItemClicked(chatCharacterItem: ChatItemSummary) {
+        // Handle click on chat character item
         // This could navigate to a chat screen with the selected character
     }
 
@@ -75,8 +101,8 @@ sealed interface UserScoreUiState {
     data class Error(val message: String) : UserScoreUiState
 }
 
-sealed interface ChatRecentHistoryState {
-    data object Loading : ChatRecentHistoryState
-    data class Success(val chatHistory: List<ChatRecentHistoryItem>) : ChatRecentHistoryState
-    data class Error(val message: String) : ChatRecentHistoryState
+sealed interface ChatCharactersState {
+    data object Loading : ChatCharactersState
+    data class Success(val characters: List<ChatItemSummary>) : ChatCharactersState
+    data class Error(val message: String) : ChatCharactersState
 }

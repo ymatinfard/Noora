@@ -21,8 +21,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.matin.noora.core.domain.model.ChatCharacter
-import com.matin.noora.core.domain.model.ChatRecentHistoryItem
+import com.matin.noora.core.domain.model.ChatItemSummary
 import com.matin.noora.core.domain.model.UserScore
 import com.matin.noora.designsystem.NooraTheme
 import com.matin.noora.designsystem.component.ChatCharacterRow
@@ -34,18 +33,24 @@ import kotlin.time.Instant
 fun ChatDashboardScreenRoute(viewModel: ChatDashboardScreenViewModel = hiltViewModel()) {
     val userScoreState by viewModel.userScore.collectAsStateWithLifecycle()
     val chatRecentHistoryState by viewModel.recentChatHistory.collectAsStateWithLifecycle()
+    val chatCharactersState by viewModel.chatCharacters.collectAsStateWithLifecycle()
+
     ChatDashboardScreen(
         userScore = userScoreState,
         chatRecentHistoryState = chatRecentHistoryState,
-        onChatRecentHistoryItemClicked = viewModel::onChatRecentHistoryItemClicked
+        chatCharactersState = chatCharactersState,
+        onChatRecentHistoryItemClicked = viewModel::onChatRecentHistoryItemClicked,
+        onChatCharacterItemClicked = viewModel::onChatCharacterItemClicked
     )
 }
 
 @Composable
 fun ChatDashboardScreen(
     userScore: UserScoreUiState,
-    chatRecentHistoryState: ChatRecentHistoryState,
-    onChatRecentHistoryItemClicked: (ChatRecentHistoryItem) -> Unit = {}
+    chatRecentHistoryState: ChatCharactersState,
+    chatCharactersState: ChatCharactersState,
+    onChatRecentHistoryItemClicked: (ChatItemSummary) -> Unit = {},
+    onChatCharacterItemClicked: (ChatItemSummary) -> Unit = {}
 ) {
     Column(
         modifier = Modifier
@@ -54,64 +59,81 @@ fun ChatDashboardScreen(
     ) {
         NooraTopAppBar(title = "Chat", userScore = userScore)
         Spacer(Modifier.height(32.dp))
-        ChatRecentHistory(
-            history = chatRecentHistoryState,
-            onClick = { item ->
-                onChatRecentHistoryItemClicked(item)
-            })
+        ChatCard(
+            title = "Recent Chats",
+            state = chatRecentHistoryState,
+            onClick = onChatRecentHistoryItemClicked
+        )
+        Spacer(Modifier.height(16.dp))
+        ChatCard(
+            title = "Chat Characters",
+            state = chatCharactersState,
+            onClick = onChatCharacterItemClicked
+        )
     }
 }
 
 @OptIn(ExperimentalTime::class)
 @Composable
-fun ChatRecentHistory(
-    history: ChatRecentHistoryState,
-    onClick: (ChatRecentHistoryItem) -> Unit
+fun ChatCard(
+    title: String,
+    state: ChatCharactersState,
+    onClick: (ChatItemSummary) -> Unit
 ) {
-    when (history) {
-        is ChatRecentHistoryState.Loading -> {
-            Text(text = "Loading chat history...")
+    when (state) {
+        is ChatCharactersState.Loading -> {
+            Text(text = "Loading...")
         }
 
-        is ChatRecentHistoryState.Error -> {
-            Text(text = "Error loading chat history: ${history.message}")
+        is ChatCharactersState.Error -> {
+            Text(text = "Error loading chat: ${state.message}")
         }
 
-        is ChatRecentHistoryState.Success -> {
-            Card(
-                elevation = CardDefaults.cardElevation(
-                    defaultElevation = 1.dp,
-                ),
-            ) {
-                LazyColumn(
-                    modifier = Modifier.padding(16.dp),
-                    verticalArrangement = spacedBy(8.dp)
-                ) {
-                    item {
-                        Text(
-                            text = "Recent Chats",
-                            style = MaterialTheme.typography.titleMedium,
-                        )
-                    }
-                    items(items = history.chatHistory) { item ->
-                        ChatCharacterRow(
-                            character = item.chatCharacter,
-                            message = item.lastMessage,
-                            date = item.timestamp,
-                            onClick = {
-                                onClick(item)
-                            }
-                        )
+        is ChatCharactersState.Success -> {
+            ChatCardContent(title = title, state.characters, onClick)
+        }
+    }
+}
 
-                        if (item != history.chatHistory.last()) {
-                            HorizontalDivider(
-                                modifier = Modifier.padding(
-                                    horizontal = 16.dp,
-                                    vertical = 8.dp
-                                ), color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f)
-                            )
-                        }
+@Composable
+@OptIn(ExperimentalTime::class)
+private fun ChatCardContent(
+    title: String,
+    chatItems: List<ChatItemSummary>,
+    onClick: (ChatItemSummary) -> Unit
+) {
+    Card(
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 1.dp,
+        ),
+    ) {
+        LazyColumn(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = spacedBy(8.dp)
+        ) {
+            item {
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.titleMedium,
+                )
+            }
+            items(items = chatItems) { item ->
+                ChatCharacterRow(
+                    name = item.name,
+                    message = item.lastMessage,
+                    date = item.timestamp,
+                    onClick = {
+                        onClick(item)
                     }
+                )
+
+                if (item != chatItems.last()) {
+                    HorizontalDivider(
+                        modifier = Modifier.padding(
+                            horizontal = 16.dp,
+                            vertical = 8.dp
+                        ), color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f)
+                    )
                 }
             }
         }
@@ -120,31 +142,6 @@ fun ChatRecentHistory(
 
 fun String.capitalizeFirstLetter(): String {
     return this.lowercase().replaceFirstChar { it.uppercase() }
-}
-
-@OptIn(ExperimentalTime::class)
-@Preview(showBackground = false)
-@Composable
-private fun ScoreIndicatorsPreview() {
-    NooraTheme {
-        ChatRecentHistory(
-            history = ChatRecentHistoryState.Success(
-                chatHistory = listOf(
-                    ChatRecentHistoryItem(
-                        chatCharacter = ChatCharacter.SHAHIN,
-                        lastMessage = "Hello, how are you?",
-                        timestamp = Instant.fromEpochMilliseconds(1633072800000L)
-                    ),
-                    ChatRecentHistoryItem(
-                        chatCharacter = ChatCharacter.NOORA,
-                        lastMessage = "I'm fine, thanks!",
-                        timestamp = Instant.fromEpochMilliseconds(1633076400000L)
-                    )
-                )
-            ),
-            onClick = {}
-        )
-    }
 }
 
 @OptIn(ExperimentalTime::class)
@@ -164,20 +161,32 @@ private fun ChatDashboardScreenPreview() {
                     like = 129,
                 )
             ),
-            chatRecentHistoryState = ChatRecentHistoryState.Success(
-                chatHistory = listOf(
-                    ChatRecentHistoryItem(
-                        chatCharacter = ChatCharacter.SHAHIN,
+            chatRecentHistoryState = ChatCharactersState.Success(
+                characters = listOf(
+                    ChatItemSummary(
+                        name = "ali",
                         lastMessage = "Hello, how are you?",
                         timestamp = Instant.fromEpochMilliseconds(1633072800000L)
                     ),
-                    ChatRecentHistoryItem(
-                        chatCharacter = ChatCharacter.NOORA,
+                    ChatItemSummary(
+                        name = "shahin",
                         lastMessage = "I'm fine, thanks!",
                         timestamp = Instant.fromEpochMilliseconds(1633076400000L)
                     )
                 )
-            )
+            ),
+            chatCharactersState = ChatCharactersState.Success(
+                characters = listOf(
+                    ChatItemSummary(
+                        name = "noora",
+                        lastMessage = "Hello, how can I assist you today?",
+                    ),
+                    ChatItemSummary(
+                        name = "matin",
+                        lastMessage = "What would you like to know?",
+                    )
+                )
+            ),
         )
     }
 }

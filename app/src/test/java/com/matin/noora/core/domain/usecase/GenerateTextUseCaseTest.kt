@@ -1,8 +1,8 @@
 package com.matin.noora.core.domain.usecase
 
 import com.matin.noora.core.common.Result
-import com.matin.noora.core.domain.repository.AIRepository
 import com.matin.noora.core.domain.PromptAnalyzer
+import com.matin.noora.core.domain.repository.AIRepository
 import com.matin.noora.core.domain.model.Prompt
 import com.matin.noora.core.domain.model.PromptCategory
 import com.matin.noora.core.domain.model.PromptRequest

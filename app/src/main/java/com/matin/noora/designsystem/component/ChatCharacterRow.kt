@@ -17,7 +17,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.matin.noora.core.common.getAvatar
-import com.matin.noora.core.domain.model.ChatCharacter
 import com.matin.noora.designsystem.formatInstantToDate
 import com.matin.noora.feature.chat.capitalizeFirstLetter
 import kotlin.time.ExperimentalTime
@@ -26,7 +25,7 @@ import kotlin.time.Instant
 @OptIn(ExperimentalTime::class)
 @Composable
 fun ChatCharacterRow(
-    character: ChatCharacter,
+    name: String,
     message: String,
     date: Instant? = null,
     onClick: () -> Unit = {}
@@ -41,7 +40,7 @@ fun ChatCharacterRow(
     ) {
         Image(
             modifier = Modifier.size(64.dp),
-            painter = painterResource(id = character.getAvatar()),
+            painter = painterResource(id = name.getAvatar()),
             contentDescription = null
         )
         Column(
@@ -51,7 +50,7 @@ fun ChatCharacterRow(
             verticalArrangement = Arrangement.Center,
         ) {
             Text(
-                character.name.capitalizeFirstLetter(),
+                name.capitalizeFirstLetter(),
                 style = MaterialTheme.typography.titleMedium
             )
             Text(
