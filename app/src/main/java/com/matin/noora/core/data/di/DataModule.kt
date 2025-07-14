@@ -15,6 +15,8 @@ import dagger.hilt.components.SingletonComponent
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Singleton
+import kotlinx.coroutines.CoroutineDispatcher
+import javax.inject.Qualifier
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -46,4 +48,24 @@ object DataProviderModule {
             .build()
             .create(GenAIApi::class.java)
     }
+
+    @IoDispatcher
+    @Provides
+    fun provideIoDispatcher(): CoroutineDispatcher {
+        return kotlinx.coroutines.Dispatchers.IO
+    }
+
+    @MainDispatcher
+    @Provides
+    fun provideMainDispatcher(): CoroutineDispatcher {
+        return kotlinx.coroutines.Dispatchers.Main
+    }
 }
+
+@Qualifier
+@Retention(AnnotationRetention.BINARY)
+annotation class IoDispatcher
+
+@Qualifier
+@Retention(AnnotationRetention.BINARY)
+annotation class MainDispatcher
