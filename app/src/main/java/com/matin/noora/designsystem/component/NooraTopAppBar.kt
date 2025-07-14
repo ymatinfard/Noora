@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -38,7 +39,8 @@ fun NooraTopAppBar(
     ) {
         Text(
             text = title,
-            style = MaterialTheme.typography.titleLarge,
+            style = MaterialTheme.typography.headlineMedium,
+            fontWeight = FontWeight.Bold,
             maxLines = 1
         )
         Spacer(Modifier.weight(1f))
@@ -50,7 +52,9 @@ fun NooraTopAppBar(
 fun UserScoreCard(userScore: UserScoreUiState) {
     val scores = (userScore as? UserScoreUiState.Success)?.userScore ?: UserScore(0, 0, 0)
     val enabled = userScore is UserScoreUiState.Success
-    Card {
+    Card(
+        modifier = Modifier.padding(8.dp),
+    ) {
         Row(
             modifier = Modifier.padding(8.dp),
             horizontalArrangement = spacedBy(8.dp),
@@ -85,7 +89,7 @@ fun ScoreItem(
     isEnable: Boolean = true,
     contentDescription: String?,
     iconSize: Dp = 24.dp,
-    spacing: Dp = 4.dp,
+    spacing: Dp = 2.dp,
     textStyle: TextStyle = MaterialTheme.typography.bodyMedium,
     modifier: Modifier = Modifier
 ) {

@@ -1,7 +1,7 @@
 package com.matin.noora.core.data.remote
 
 import com.matin.noora.core.common.Result
-import com.matin.noora.core.domain.AIRepository
+import com.matin.noora.core.domain.repository.AIRepository
 import com.matin.noora.core.domain.model.PromptRequest
 import com.matin.noora.core.domain.model.TextAIResponse
 

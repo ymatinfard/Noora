@@ -1,4 +1,4 @@
-package com.matin.noora.core.domain
+package com.matin.noora.core.domain.repository
 
 import com.matin.noora.core.common.Result
 import com.matin.noora.core.domain.model.PromptRequest
