@@ -10,13 +10,21 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material3.Card
@@ -32,6 +40,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -39,6 +49,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.matin.noora.R
 import com.matin.noora.core.common.getAvatar
 import com.matin.noora.core.domain.model.ChatCharacterItem
+import com.matin.noora.core.domain.model.Tool
 import com.matin.noora.designsystem.NooraTheme
 import com.matin.noora.feature.chat.ChatCharactersState
 import com.matin.noora.feature.chat.capitalizeFirstLetter
@@ -47,19 +58,124 @@ import kotlin.time.ExperimentalTime
 @Composable
 fun HomeScreenRoute(viewModel: HomeScreenViewModel = hiltViewModel()) {
     val charactersState by viewModel.characters.collectAsStateWithLifecycle()
-    HomeScreen(charactersState = charactersState)
+    val toolsState by viewModel.tools.collectAsStateWithLifecycle()
+    HomeScreen(charactersState = charactersState, toolsState, viewModel::onToolClicked)
 }
 
 @Composable
-fun HomeScreen(charactersState: ChatCharactersState) {
+fun HomeScreen(
+    charactersState: ChatCharactersState,
+    toolsState: ToolsState,
+    onToolClicked: (Tool) -> Unit
+) {
     Column(
-        modifier = Modifier.padding(16.dp)
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
     ) {
         HomeTopBar("USF")
-        Spacer(modifier = Modifier.padding(vertical = 16.dp))
-        HelpCard()
-        Spacer(modifier = Modifier.padding(vertical = 16.dp))
-        CharactersCard(charactersState)
+        Column(
+            modifier = Modifier.verticalScroll(rememberScrollState())
+        ) {
+            SectionSpacer()
+            HelpCard()
+            SectionSpacer()
+            CharactersCard(charactersState)
+            SectionSpacer()
+            ToolsCard(toolsState, onToolClicked)
+        }
+    }
+}
+
+@Composable
+private fun SectionSpacer() {
+    Spacer(modifier = Modifier.padding(vertical = 8.dp))
+}
+
+@Composable
+fun ToolsCard(toolsState: ToolsState, onToolClicked: (Tool) -> Unit = {}) {
+    when (toolsState) {
+        is ToolsState.Loading -> {
+            Text(
+                modifier = Modifier.padding(16.dp),
+                text = stringResource(R.string.loading),
+                style = MaterialTheme.typography.bodyLarge
+            )
+        }
+
+        is ToolsState.Error -> {
+            Text(
+                modifier = Modifier.padding(16.dp),
+                text = toolsState.message,
+                style = MaterialTheme.typography.bodyLarge
+            )
+        }
+
+        is ToolsState.Success -> {
+            ToolsCardContent(toolsState.tools, onToolClicked = onToolClicked)
+        }
+    }
+}
+
+@Composable
+fun ToolsCardContent(
+    tools: List<Tool>,
+    onToolClicked: (Tool) -> Unit,
+    onSeeMoreClicked: () -> Unit = {}
+) {
+    Column(
+        modifier = Modifier
+            .padding(8.dp)
+            .fillMaxSize()
+    ) {
+        SeeMore("Tools", onSeeMoreClicked)
+        LazyVerticalGrid(
+            modifier = Modifier.heightIn(max = 500.dp),
+            columns = GridCells.Fixed(2),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            userScrollEnabled = false,
+        ) {
+            items(tools) { tool ->
+                ToolItem(tool, onToolClicked = { onToolClicked(tool) })
+            }
+        }
+    }
+}
+
+@Composable
+private fun ToolItem(tool: Tool, onToolClicked: (Tool) -> Unit = {}) {
+    Card(
+        shape = RoundedCornerShape(8.dp),
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(220.dp)
+                .padding(8.dp)
+        ) {
+            Spacer(modifier = Modifier.height(8.dp))
+            Image(
+                modifier = Modifier.size(120.dp),
+                painter = painterResource(id = tool.imgRes),
+                contentDescription = tool.name,
+            )
+            Spacer(modifier = Modifier.padding(vertical = 8.dp))
+            Text(
+                text = tool.name,
+                style = MaterialTheme.typography.bodyLarge,
+                fontWeight = FontWeight.Bold,
+                maxLines = 1
+            )
+            Text(
+                modifier = Modifier.padding(top = 6.dp),
+                text = tool.description,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.outlineVariant,
+                overflow = TextOverflow.Ellipsis,
+                maxLines = 2,
+            )
+        }
     }
 }
 
@@ -102,33 +218,16 @@ private fun CharacterCardContent(
     onSeeMoreClicked: () -> Unit,
     onCharacterClicked: (ChatCharacterItem) -> Unit
 ) {
-    Card{
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 8.dp, bottom = 16.dp)
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+    ) {
+        SeeMore("Characters", onSeeMoreClicked)
+        Card(
+            modifier = Modifier.fillMaxWidth()
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Text(
-                    modifier = Modifier.padding(start = 16.dp),
-                    text = stringResource(R.string.characters),
-                    style = MaterialTheme.typography.titleLarge,
-                )
-                TextButton(
-                    onClick = onSeeMoreClicked,
-                ) {
-                    Text(
-                        modifier = Modifier.clickable {},
-                        text = stringResource(R.string.see_more),
-                        style = MaterialTheme.typography.bodyMedium,
-                    )
-                }
-            }
             LazyRow(
+                modifier = Modifier.padding(vertical = 16.dp),
                 horizontalArrangement = Arrangement.spacedBy(4.dp),
                 contentPadding = PaddingValues(start = 16.dp)
             ) {
@@ -140,6 +239,30 @@ private fun CharacterCardContent(
                     }
                 }
             }
+        }
+    }
+}
+
+@Composable
+private fun SeeMore(title: String, onSeeMoreClicked: () -> Unit) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(
+            modifier = Modifier.padding(start = 16.dp),
+            text = title,
+            style = MaterialTheme.typography.titleLarge,
+        )
+        TextButton(
+            onClick = onSeeMoreClicked,
+        ) {
+            Text(
+                modifier = Modifier.clickable {},
+                text = stringResource(R.string.see_more),
+                style = MaterialTheme.typography.bodyMedium,
+            )
         }
     }
 }
@@ -340,7 +463,68 @@ fun HomeScreenPreview() {
                     ChatCharacterItem("3", "shiva", "A curious character"),
                     ChatCharacterItem("4", "majid", "A wise character")
                 )
+            ),
+            toolsState = ToolsState.Success(
+                tools = listOf(
+                    Tool(
+                        "Tool 1",
+                        "Description of Tool 1",
+                        description = "",
+                        iconUrl = "",
+                        imgRes = R.drawable.ic_summarize
+                    ),
+                    Tool(
+                        "Tool 2",
+                        "Description of Tool 2",
+                        description = "",
+                        iconUrl = "",
+                        imgRes = R.drawable.ic_drawing
+                    ),
+                )
+            ),
+            onToolClicked = {}
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun ToolsCardPreview() {
+    NooraTheme {
+        ToolsCard(
+            toolsState = ToolsState.Success(
+                tools = listOf(
+                    Tool(
+                        "Image creation",
+                        "Tool 1",
+                        description = "Summarize your text, no worries how content is long or complex just drop it here!",
+                        iconUrl = "",
+                        imgRes = R.drawable.ic_summarize
+                    ),
+                    Tool(
+                        "Summarize",
+                        "Tool 2",
+                        description = "You can draw anything you want",
+                        iconUrl = "",
+                        imgRes = R.drawable.ic_drawing
+                    ),
+                    Tool(
+                        "Maths ",
+                        "Maths",
+                        description = "You can draw anything you want",
+                        iconUrl = "",
+                        imgRes = R.drawable.ic_math
+                    ),
+                    Tool(
+                        "id b1 ",
+                        "Writing",
+                        description = "You can writing anything you want",
+                        iconUrl = "",
+                        imgRes = R.drawable.ic_writing
+                    ),
+                )
             )
         )
     }
+
 }

@@ -10,6 +10,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
+import com.matin.noora.core.domain.model.Tool
 
 @HiltViewModel
 class HomeScreenViewModel @Inject constructor(val repository: AIRepository): ViewModel() {
@@ -28,4 +29,28 @@ class HomeScreenViewModel @Inject constructor(val repository: AIRepository): Vie
             started = kotlinx.coroutines.flow.SharingStarted.WhileSubscribed(5000),
             initialValue = ChatCharactersState.Loading
         )
+
+    val tools = repository.getTools()
+        .asResult()
+        .map {
+            when (it) {
+                is Result.Success -> ToolsState.Success(it.data)
+                is Result.Error -> ToolsState.Error(it.exception.message ?: "Unknown error")
+                Result.Loading -> ToolsState.Loading
+            }
+        }.stateIn(
+            scope = viewModelScope,
+            started = kotlinx.coroutines.flow.SharingStarted.WhileSubscribed(5000),
+            initialValue = ToolsState.Loading
+        )
+
+    fun onToolClicked(tool: Tool){
+
+    }
+}
+
+sealed interface ToolsState {
+    data class Success(val tools: List<Tool>): ToolsState
+    data class Error(val message: String): ToolsState
+    object Loading: ToolsState
 }
