@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Noora</string>
+    <string name="what_can_i_help_you_with">What can I help you with?</string>
+    <string name="message">Message</string>
 </resources>
