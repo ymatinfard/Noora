@@ -4,9 +4,9 @@ import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
 @OptIn(ExperimentalTime::class)
-data class ChatItemSummary (
+data class ChatCharacterItem (
     val id: String = "A1",
     val name: String,
-    val lastMessage: String,
+    val description: String,
     val timestamp: Instant? = null
 )

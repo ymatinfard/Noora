@@ -1,6 +1,7 @@
 package com.matin.noora.core.data.remote
 
-import com.matin.noora.core.domain.model.Character
+import com.matin.noora.core.domain.model.ChatCharacterItem
+import kotlin.time.ExperimentalTime
 
 data class CharacterListNetwork(
     val characters: List<CharacterNetwork>
@@ -11,11 +12,12 @@ data class CharacterNetwork(
     val name: String,
     val description: String,
 ) {
-    fun toDomain(): Character {
-        return Character(
+    @OptIn(ExperimentalTime::class)
+    fun toDomain(): ChatCharacterItem {
+        return ChatCharacterItem(
             id = id,
             name = name,
-            description = description
+            description = description,
         )
     }
 }

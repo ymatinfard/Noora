@@ -2,10 +2,10 @@ package com.matin.noora.core.data.remote
 
 import com.matin.noora.core.common.Result
 import com.matin.noora.core.data.di.IoDispatcher
-import com.matin.noora.core.domain.model.Character
-import com.matin.noora.core.domain.repository.AIRepository
+import com.matin.noora.core.domain.model.ChatCharacterItem
 import com.matin.noora.core.domain.model.PromptRequest
 import com.matin.noora.core.domain.model.TextAIResponse
+import com.matin.noora.core.domain.repository.AIRepository
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -33,7 +33,7 @@ class AIRepositoryImpl @Inject constructor(
             }
         }
 
-    override fun getChatCharacters(): Flow<List<Character>> = flow {
+    override fun getChatCharacters(): Flow<List<ChatCharacterItem>> = flow {
       //  val result = genAIApi.getCharacters()
         val result = listOf<CharacterNetwork>(
             CharacterNetwork(

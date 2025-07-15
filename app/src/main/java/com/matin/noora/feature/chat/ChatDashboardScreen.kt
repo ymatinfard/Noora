@@ -21,7 +21,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.matin.noora.core.domain.model.ChatItemSummary
+import com.matin.noora.core.domain.model.ChatCharacterItem
 import com.matin.noora.core.domain.model.UserScore
 import com.matin.noora.designsystem.NooraTheme
 import com.matin.noora.designsystem.component.ChatCharacterRow
@@ -49,8 +49,8 @@ fun ChatDashboardScreen(
     userScore: UserScoreUiState,
     chatRecentHistoryState: ChatCharactersState,
     chatCharactersState: ChatCharactersState,
-    onChatRecentHistoryItemClicked: (ChatItemSummary) -> Unit = {},
-    onChatCharacterItemClicked: (ChatItemSummary) -> Unit = {}
+    onChatRecentHistoryItemClicked: (ChatCharacterItem) -> Unit = {},
+    onChatCharacterItemClicked: (ChatCharacterItem) -> Unit = {}
 ) {
     Column(
         modifier = Modifier
@@ -78,7 +78,7 @@ fun ChatDashboardScreen(
 fun ChatCard(
     title: String,
     state: ChatCharactersState,
-    onClick: (ChatItemSummary) -> Unit
+    onClick: (ChatCharacterItem) -> Unit
 ) {
     when (state) {
         is ChatCharactersState.Loading -> {
@@ -99,8 +99,8 @@ fun ChatCard(
 @OptIn(ExperimentalTime::class)
 private fun ChatCardContent(
     title: String,
-    chatItems: List<ChatItemSummary>,
-    onClick: (ChatItemSummary) -> Unit
+    chatItems: List<ChatCharacterItem>,
+    onClick: (ChatCharacterItem) -> Unit
 ) {
     Card(
         elevation = CardDefaults.cardElevation(
@@ -120,7 +120,7 @@ private fun ChatCardContent(
             items(items = chatItems) { item ->
                 ChatCharacterRow(
                     name = item.name,
-                    message = item.lastMessage,
+                    message = item.description,
                     date = item.timestamp,
                     onClick = {
                         onClick(item)
@@ -163,27 +163,27 @@ private fun ChatDashboardScreenPreview() {
             ),
             chatRecentHistoryState = ChatCharactersState.Success(
                 characters = listOf(
-                    ChatItemSummary(
+                    ChatCharacterItem(
                         name = "ali",
-                        lastMessage = "Hello, how are you?",
+                        description = "Hello, how are you?",
                         timestamp = Instant.fromEpochMilliseconds(1633072800000L)
                     ),
-                    ChatItemSummary(
+                    ChatCharacterItem(
                         name = "shahin",
-                        lastMessage = "I'm fine, thanks!",
+                        description = "I'm fine, thanks!",
                         timestamp = Instant.fromEpochMilliseconds(1633076400000L)
                     )
                 )
             ),
             chatCharactersState = ChatCharactersState.Success(
                 characters = listOf(
-                    ChatItemSummary(
+                    ChatCharacterItem(
                         name = "noora",
-                        lastMessage = "Hello, how can I assist you today?",
+                        description = "Hello, how can I assist you today?",
                     ),
-                    ChatItemSummary(
+                    ChatCharacterItem(
                         name = "matin",
-                        lastMessage = "What would you like to know?",
+                        description = "What would you like to know?",
                     )
                 )
             ),

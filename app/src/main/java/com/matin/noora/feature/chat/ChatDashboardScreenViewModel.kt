@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.matin.noora.core.common.Result
 import com.matin.noora.core.common.asResult
-import com.matin.noora.core.domain.model.ChatItemSummary
+import com.matin.noora.core.domain.model.ChatCharacterItem
 import com.matin.noora.core.domain.model.UserScore
 import com.matin.noora.core.domain.repository.AIRepository
 import com.matin.noora.core.domain.repository.ChatLocalRepository
@@ -66,7 +66,7 @@ class ChatDashboardScreenViewModel @Inject constructor(
         .asResult()
         .map { result ->
             when (result) {
-                is Result.Success -> ChatCharactersState.Success(result.data.map { it.toSummary() })
+                is Result.Success -> ChatCharactersState.Success(result.data)
                 is Result.Error -> ChatCharactersState.Error(
                     result.exception.message ?: "Unknown error"
                 )
@@ -80,12 +80,12 @@ class ChatDashboardScreenViewModel @Inject constructor(
             initialValue = ChatCharactersState.Loading
         )
 
-    fun onChatRecentHistoryItemClicked(chatHistoryItem: ChatItemSummary) {
+    fun onChatRecentHistoryItemClicked(chatHistoryItem: ChatCharacterItem) {
         // Handle click on chat history item
         // This could navigate to a chat screen with the selected character
     }
 
-    fun onChatCharacterItemClicked(chatCharacterItem: ChatItemSummary) {
+    fun onChatCharacterItemClicked(chatCharacterItem: ChatCharacterItem) {
         // Handle click on chat character item
         // This could navigate to a chat screen with the selected character
     }
@@ -103,6 +103,6 @@ sealed interface UserScoreUiState {
 
 sealed interface ChatCharactersState {
     data object Loading : ChatCharactersState
-    data class Success(val characters: List<ChatItemSummary>) : ChatCharactersState
+    data class Success(val characters: List<ChatCharacterItem>) : ChatCharactersState
     data class Error(val message: String) : ChatCharactersState
 }
