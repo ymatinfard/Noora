@@ -19,7 +19,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.matin.noora.designsystem.NooraTheme
-import com.matin.noora.feature.chat.ChatDashboardScreenRoute
+import com.matin.noora.feature.home.HomeScreenRoute
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -39,9 +39,10 @@ class MainActivity : ComponentActivity() {
                                 WindowInsets.safeDrawing.only(
                                     WindowInsetsSides.Horizontal,
                                 ),
-                            ),
+                            )
                     ) {
-                        ChatDashboardScreenRoute()
+                       // ChatDashboardScreenRoute()
+                        HomeScreenRoute()
                     }
                 }
             }
