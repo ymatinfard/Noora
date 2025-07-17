@@ -151,7 +151,7 @@ private fun ToolItem(tool: Tool, onToolClicked: (Tool) -> Unit = {}) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(220.dp)
+                .height(230.dp)
                 .padding(8.dp)
         ) {
             Spacer(modifier = Modifier.height(8.dp))
