@@ -29,22 +29,8 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             NooraTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { padding ->
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(padding)
-                            .consumeWindowInsets(padding)
-                            .windowInsetsPadding(
-                                WindowInsets.safeDrawing.only(
-                                    WindowInsetsSides.Horizontal,
-                                ),
-                            )
-                    ) {
-                       // ChatDashboardScreenRoute()
-                        HomeScreenRoute()
-                    }
-                }
+                // ChatDashboardScreenRoute()
+                NooraApp()
             }
         }
     }
