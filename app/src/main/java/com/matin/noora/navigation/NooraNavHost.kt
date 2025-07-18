@@ -1,5 +1,8 @@
 package com.matin.noora.navigation
 
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -11,7 +14,13 @@ import com.matin.noora.feature.home.navigation.homeScreen
 fun NooraNavHost(navController: NavHostController) {
     NavHost(
         startDestination = HomeRoute,
-        navController = navController
+        navController = navController,
+        enterTransition = {
+            fadeIn(animationSpec = tween(400))
+        },
+        exitTransition = {
+            fadeOut(animationSpec = tween(400))
+        }
     ) {
         homeScreen()
         chatDashboardScreen()

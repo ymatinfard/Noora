@@ -68,6 +68,7 @@ fun NooraNavigationSuitScaffold(
     )
 
     NavigationSuiteScaffold(
+        modifier = modifier,
         navigationSuiteItems = {
             TopLevelDestination.entries.forEach { destination ->
                 val selected = currentDestination.isRouteInHierarchy(destination.route)
