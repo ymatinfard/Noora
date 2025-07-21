@@ -30,7 +30,7 @@ import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
 @Composable
-fun ChatDashboardScreenRoute(viewModel: ChatDashboardScreenViewModel = hiltViewModel()) {
+fun ChatDashboardScreenRoute(viewModel: ChatDashboardScreenViewModel = hiltViewModel(), onChatCharacterClicked: (ChatCharacterItem) -> Unit = {}) {
     val userScoreState by viewModel.userScore.collectAsStateWithLifecycle()
     val chatRecentHistoryState by viewModel.recentChatHistory.collectAsStateWithLifecycle()
     val chatCharactersState by viewModel.chatCharacters.collectAsStateWithLifecycle()
@@ -40,7 +40,7 @@ fun ChatDashboardScreenRoute(viewModel: ChatDashboardScreenViewModel = hiltViewM
         chatRecentHistoryState = chatRecentHistoryState,
         chatCharactersState = chatCharactersState,
         onChatRecentHistoryItemClicked = viewModel::onChatRecentHistoryItemClicked,
-        onChatCharacterItemClicked = viewModel::onChatCharacterItemClicked
+        onChatCharacterClicked = onChatCharacterClicked
     )
 }
 
@@ -50,7 +50,7 @@ fun ChatDashboardScreen(
     chatRecentHistoryState: ChatCharactersState,
     chatCharactersState: ChatCharactersState,
     onChatRecentHistoryItemClicked: (ChatCharacterItem) -> Unit = {},
-    onChatCharacterItemClicked: (ChatCharacterItem) -> Unit = {}
+    onChatCharacterClicked: (ChatCharacterItem) -> Unit = {}
 ) {
     Column(
         modifier = Modifier
@@ -68,7 +68,7 @@ fun ChatDashboardScreen(
         ChatCard(
             title = "Chat Characters",
             state = chatCharactersState,
-            onClick = onChatCharacterItemClicked
+            onClick = onChatCharacterClicked
         )
     }
 }

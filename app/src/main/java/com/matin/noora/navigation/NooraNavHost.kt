@@ -7,6 +7,8 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import com.matin.noora.feature.chat.navigation.chatDashboardScreen
+import com.matin.noora.feature.chat.navigation.chatScreen
+import com.matin.noora.feature.chat.navigation.navigateToChat
 import com.matin.noora.feature.home.navigation.HomeRoute
 import com.matin.noora.feature.home.navigation.homeScreen
 
@@ -23,6 +25,9 @@ fun NooraNavHost(navController: NavHostController) {
         }
     ) {
         homeScreen()
-        chatDashboardScreen()
+        chatDashboardScreen(onChatCharacterClicked = {
+            navController.navigateToChat(it.id)
+        })
+        chatScreen()
     }
 }
