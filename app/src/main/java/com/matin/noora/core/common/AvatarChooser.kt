@@ -2,17 +2,17 @@ package com.matin.noora.core.common
 
 import com.matin.noora.R
 
-fun String.getAvatar(): Int {
-    return when (this) {
-        "ali" -> R.drawable.ali
-        "amir" -> R.drawable.amir
-        "fatemeh" -> R.drawable.fatemeh
-        "majid" -> R.drawable.majid
-        "matin" -> R.drawable.matin
-        "noora" -> R.drawable.noora
-        "mehran" -> R.drawable.mehran
-        "shahin" -> R.drawable.shahin
-        "shiva" -> R.drawable.shiva
-        else -> R.drawable.noora // Default avatar
-    }
-}
+val avatarMap =
+    mapOf(
+        "games" to R.drawable.ali,
+        "language" to R.drawable.amir,
+        "friend" to R.drawable.fatemeh,
+        "adult" to R.drawable.majid,
+        "trainer" to R.drawable.matin,
+        "noora" to R.drawable.noora,
+        "teacher" to R.drawable.mehran,
+        "legal" to R.drawable.shahin,
+        "marketing" to R.drawable.shiva,
+    )
+
+fun String.getAvatar() = avatarMap[this.lowercase()] ?: R.drawable.noora
