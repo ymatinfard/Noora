@@ -1,0 +1,143 @@
+package com.matin.noora.core.data
+
+import com.matin.noora.R
+import com.matin.noora.core.data.di.IoDispatcher
+import com.matin.noora.core.data.local.MessageDao
+import com.matin.noora.core.data.remote.CharacterNetwork
+import com.matin.noora.core.data.remote.GenAIApi
+import com.matin.noora.core.data.remote.MessageQueue
+import com.matin.noora.core.domain.model.ChatCharacterItem
+import com.matin.noora.core.domain.model.Message
+import com.matin.noora.core.domain.model.MessageFactory.createMessage
+import com.matin.noora.core.domain.model.MessageState
+import com.matin.noora.core.domain.model.Prompt
+import com.matin.noora.core.domain.model.Tool
+import com.matin.noora.core.domain.model.toDomain
+import com.matin.noora.core.domain.model.toEntity
+import com.matin.noora.core.domain.repository.AIRepository
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
+import javax.inject.Inject
+import kotlin.time.ExperimentalTime
+import kotlin.time.Instant
+
+class AIRepositoryImpl @Inject constructor(
+    private val genAIApi: GenAIApi,
+    private val messageDao: MessageDao,
+    private val messageQueue: MessageQueue,
+    @IoDispatcher val ioDispatcher: CoroutineDispatcher
+) : AIRepository {
+
+    override suspend fun insertToDb(prompt: Prompt, categoryId: String) {
+        try {
+            val message = createMessage(prompt, categoryId)
+            messageDao.insertMessageToDb(
+                message.toEntity(MessageState.PENDING)
+            )
+
+            messageQueue.enqueue(message.id)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    override fun hasPendingMessage(): Flow<Boolean> {
+        TODO("Not yet implemented")
+    }
+
+    override fun getChatMessages(categoryId: String): Flow<List<Message>> {
+        return messageDao.getAllMessages(categoryId).distinctUntilChanged()
+            .map { entityList -> entityList.map { it.toDomain() } }
+    }
+
+    override fun getChatCharacters(): Flow<List<ChatCharacterItem>> = flow {
+        //  val result = genAIApi.getCharacters()
+        val result = fakeCharacters()
+        val characters = result.map { it.toDomain() }
+        emit(characters)
+    }.flowOn(
+        ioDispatcher
+    )
+
+    override fun getTools(): Flow<List<Tool>> {
+        return flow {
+            val tools = fakeTools()
+            emit(tools)
+        }.flowOn(ioDispatcher)
+    }
+
+    override fun getChatRecentHistory(): Flow<List<ChatCharacterItem>> {
+        return flowOf(
+            fakeChatCharacterItems()
+        )
+    }
+}
+
+@OptIn(ExperimentalTime::class)
+private fun fakeChatCharacterItems(): List<ChatCharacterItem> = listOf(
+    ChatCharacterItem(
+        name = "Noora",
+        description = "Hello, how can I assist you today?",
+        timestamp = Instant.fromEpochMilliseconds(167300000000L), // Example timestamp
+    ),
+    ChatCharacterItem(
+        name = "Matin",
+        description = "What would you like to know?",
+        timestamp = Instant.fromEpochMilliseconds(167300100000L), // Example timestamp
+    ),
+    ChatCharacterItem(
+        name = "fatemeh",
+        description = "I can help you with that.",
+        timestamp = Instant.fromEpochMilliseconds(167300200000L), // Example timestamp
+    )
+)
+
+private fun fakeTools(): List<Tool> = listOf(
+    Tool(
+        id = "tool1",
+        name = "Image creation",
+        description = "Let me draw whatever you want. Just tell me",
+        imgRes = R.drawable.ic_drawing,
+    ),
+    Tool(
+        id = "tool2",
+        name = "Summarize",
+        description = "Drop your file. I will summarize for you. No worries!",
+        imgRes = R.drawable.ic_summarize
+    ),
+    Tool(
+        id = "tool3",
+        name = "Write",
+        description = "Write about what ever comes in your mind",
+        imgRes = R.drawable.ic_writing
+    ),
+    Tool(
+        id = "tool3",
+        name = "Math",
+        description = "Do all math like prof",
+        imgRes = R.drawable.ic_math
+    ),
+)
+
+private fun fakeCharacters(): List<CharacterNetwork> = listOf<CharacterNetwork>(
+    CharacterNetwork(
+        id = "A1",
+        "majid",
+        "You can talk with your trainer!"
+    ),
+    CharacterNetwork(
+        id = "A2",
+        name = "shiva",
+        description = "Chat with me to teach you how to code like a professional"
+    ),
+    CharacterNetwork(
+        id = "A2",
+        name = "fatemeh",
+        description = "Chat with me to teach you how to code like a professional"
+    )
+)
