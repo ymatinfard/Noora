@@ -1,15 +1,18 @@
 package com.matin.noora.core.domain.model
 
-import android.net.Uri
 import com.matin.noora.core.common.ChatIdGenerator
+import com.matin.noora.core.data.local.model.MessageEntity
+import com.matin.noora.core.data.remote.MessageRequestNetwork
+import com.matin.noora.core.data.remote.TextAINetwork
 import java.time.Instant
 
-const val CURRENT_USER_ID = "noora"
+const val DEFAULT_USER_ID = "noora"
 
 abstract class BaseMessage(
     open val id: String = ChatIdGenerator.nextId(),
-    open val content: String = "",
-    open val author: String,
+    open val prompt: Prompt,
+    open val response: String = "",
+    open val categoryId: String,
     open val createdAt: Long = Instant.now().toEpochMilli(),
     open val state: MessageState,
 ) {
@@ -18,77 +21,57 @@ abstract class BaseMessage(
 
 data class Message(
     override val id: String = ChatIdGenerator.nextId(),
-    override val content: String,
-    override val author: String = CURRENT_USER_ID,
+    override val prompt: Prompt,
+    override val response: String,
+    override val categoryId: String = DEFAULT_USER_ID,
     override val createdAt: Long = Instant.now().toEpochMilli(),
-    override val state: MessageState = MessageState.PENDING,
-) : BaseMessage(id, content, author, createdAt, state) {
+    override var state: MessageState = MessageState.PENDING,
+) : BaseMessage(id, prompt, response, categoryId, createdAt, state) {
     override val type: MessageType = MessageType.TEXT
 }
-
-data class ImageMessage(
-    override val id: String = ChatIdGenerator.nextId(),
-    override val content: String = "", // Optional caption
-    override val author: String,
-    override val createdAt: Long = Instant.now().toEpochMilli(),
-    override val state: MessageState = MessageState.PENDING,
-    val imageUri: String,
-    val width: Int? = null,
-    val height: Int? = null,
-) : BaseMessage(id, content, author, createdAt, state) {
-    override val type: MessageType = MessageType.IMAGE
-}
-
-data class VoiceMessage(
-    override val id: String = ChatIdGenerator.nextId(),
-    override val content: String = "", // Optional transcription
-    override val author: String,
-    override val createdAt: Long = Instant.now().toEpochMilli(),
-    override val state: MessageState = MessageState.PENDING,
-    val voicePath: Uri,
-    val durationMs: Long,
-) : BaseMessage(id, content, author, createdAt, state) {
-    override val type: MessageType = MessageType.VOICE
-}
-
 
 /**
  * Factory methods to create messages
  */
 object MessageFactory {
     fun createMessage(
-        content: String,
-        author: String = CURRENT_USER_ID
+        prompt: Prompt,
+        categoryId: String,
     ): Message {
         return Message(
-            content = content,
-            author = author,
+            prompt = prompt,
+            response = "",
+            categoryId = categoryId,
         )
     }
 }
 
-fun createImageMessage(
-    imageUri: String,
-    caption: String = "",
-    author: String = CURRENT_USER_ID
-): ImageMessage {
-    return ImageMessage(
-        content = caption,
-        imageUri = imageUri,
-        author = author
+fun Message.toNetwork(): MessageRequestNetwork {
+    return MessageRequestNetwork(
+        prompt = prompt.value,
+        categoryId = categoryId,
     )
 }
 
-fun createVoiceMessage(
-    voicePath: Uri,
-    durationMs: Long,
-    transcription: String = "",
-    author: String = CURRENT_USER_ID
-): VoiceMessage {
-    return VoiceMessage(
-        content = transcription,
-        voicePath = voicePath,
-        durationMs = durationMs,
-        author = author
+fun Message.toEntity(state: MessageState): MessageEntity {
+    return MessageEntity(
+        id = ChatIdGenerator.nextId(),
+        prompt = prompt.value,
+        response = response,
+        categoryId = categoryId,
+        type = MessageType.TEXT,
+        timestamp = Instant.now().toEpochMilli(),
+        state = state,
+    )
+}
+
+fun MessageEntity.toDomain(): Message {
+    return Message(
+        id = id,
+        prompt = Prompt(value = response),
+        categoryId = categoryId,
+        response = response,
+        createdAt = timestamp,
+        state = state,
     )
 }

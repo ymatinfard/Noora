@@ -1,8 +1,8 @@
 package com.matin.noora.core.data.remote
 
-data class PromptNetwork(
+data class MessageRequestNetwork(
     val prompt: String,
-    val category: String,
+    val categoryId: String,
     val userId: String? = null,
     val sessionId: String? = null
 )
