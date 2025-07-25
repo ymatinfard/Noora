@@ -22,6 +22,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
@@ -33,21 +34,23 @@ class AIRepositoryImpl @Inject constructor(
     @IoDispatcher val ioDispatcher: CoroutineDispatcher
 ) : AIRepository {
 
-    override suspend fun insertToDb(prompt: Prompt, categoryId: String) {
-        try {
-            val message = createMessage(prompt, categoryId)
-            messageDao.insertMessageToDb(
-                message.toEntity(MessageState.PENDING)
-            )
+    override suspend fun insertToDb(prompt: Prompt, categoryId: String) =
+        withContext(ioDispatcher) {
+            try {
+                val message = createMessage(prompt, categoryId)
+                messageDao.insertMessage(
+                    message.toEntity(MessageState.PENDING)
+                )
 
-            messageQueue.enqueue(message.id)
-        } catch (e: Exception) {
-            e.printStackTrace()
+                messageQueue.enqueue(message.id)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
         }
-    }
 
     override fun hasPendingMessage(): Flow<Boolean> {
-        TODO("Not yet implemented")
+//        TODO("Not yet implemented")
+        return flowOf(false)
     }
 
     override fun getChatMessages(categoryId: String): Flow<List<Message>> {
