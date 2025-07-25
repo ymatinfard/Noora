@@ -4,7 +4,6 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import androidx.room.Transaction
 import com.matin.noora.core.data.local.model.MessageEntity
 import com.matin.noora.core.domain.model.MessageState
 import kotlinx.coroutines.flow.Flow
