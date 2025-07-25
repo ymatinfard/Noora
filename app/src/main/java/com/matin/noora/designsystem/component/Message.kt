@@ -7,8 +7,10 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
@@ -30,7 +32,7 @@ import com.matin.noora.core.domain.model.Message
 private const val MESSAGE_BUBBLE_CORNER_RADIUS = 16
 private const val MESSAGE_TEXT_SIZE = 20
 internal const val TIMESTAMP_TEXT_SIZE = 14
-private const val MESSAGE_VERTICAL_PADDING = 10
+private const val MESSAGE_VERTICAL_PADDING = 8
 
 @Composable
 fun MessageList(
@@ -47,7 +49,6 @@ fun MessageList(
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
             reverseLayout = true,
-            verticalArrangement = Arrangement.spacedBy(MESSAGE_VERTICAL_PADDING.dp),
             contentPadding = PaddingValues(8.dp),
             state = listState
         ) {
@@ -69,6 +70,7 @@ fun MessageList(
                 key = { it.id }
             ) { message ->
                 TextMessageContent(message)
+                Spacer(Modifier.height(MESSAGE_VERTICAL_PADDING.dp))
             }
         }
     }
