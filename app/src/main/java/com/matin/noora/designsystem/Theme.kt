@@ -22,6 +22,7 @@ private val LightColorScheme = darkColorScheme(
     surface = SurfaceBackground,
     onSurface = TextPrimary,
     outline = TextSecondary,
+    outlineVariant = CornflowerDeepBlueLight,
     surfaceContainerHighest = CardBackground
 )
 
@@ -38,6 +39,7 @@ private val DarkColorScheme = lightColorScheme(
     onSurface = TextPrimaryDark,
     surfaceVariant = CardBackgroundDark,
     outline = TextSecondaryDark,
+    outlineVariant = CornflowerDeepBlueDark,
     surfaceContainerHighest = CardBackgroundDark
 )
 
