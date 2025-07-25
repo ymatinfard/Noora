@@ -26,8 +26,12 @@ fun NooraNavHost(navController: NavHostController) {
     ) {
         homeScreen()
         chatDashboardScreen(onChatCharacterClicked = {
-            navController.navigateToChat(it.id)
+            navController.navigateToChat(it.id, it.name)
         })
-        chatScreen()
+        chatScreen(
+            onNavigateBack = { navController.popBackStack() },
+            onSearchClick = { },
+            onInfoClick = {},
+        )
     }
 }

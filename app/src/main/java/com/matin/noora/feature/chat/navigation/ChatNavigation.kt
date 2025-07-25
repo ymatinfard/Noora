@@ -8,20 +8,30 @@ import com.matin.noora.feature.chat.ChatDashboardScreenRoute
 import com.matin.noora.feature.chat.ChatScreenRoute
 import kotlinx.serialization.Serializable
 
-@Serializable data object ChatDashboardRoute
-@Serializable data class ChatRoute(val categoryId: String)
+@Serializable
+data object ChatDashboardRoute
+@Serializable
+data class ChatRoute(val categoryId: String, val name: String)
 
 fun NavController.navigateToChatDashboard() = this.navigate(ChatDashboardRoute)
-fun NavController.navigateToChat(categoryId: String) = this.navigate(ChatRoute(categoryId))
+fun NavController.navigateToChat(categoryId: String, name: String) = this.navigate(ChatRoute(categoryId, name))
 
 fun NavGraphBuilder.chatDashboardScreen(onChatCharacterClicked: (ChatCharacterItem) -> Unit) {
     composable<ChatDashboardRoute> {
-        ChatDashboardScreenRoute(onChatCharacterClicked = onChatCharacterClicked )
+        ChatDashboardScreenRoute(onChatCharacterClicked = onChatCharacterClicked)
     }
 }
 
-fun NavGraphBuilder.chatScreen() {
+fun NavGraphBuilder.chatScreen(
+    onNavigateBack: () -> Unit,
+    onSearchClick: () -> Unit = {},
+    onInfoClick: () -> Unit = {},
+) {
     composable<ChatRoute> {
-        ChatScreenRoute()
+        ChatScreenRoute(
+            onNavigateBack = onNavigateBack,
+            onSearchClick = onSearchClick,
+            onInfoClick = onInfoClick
+        )
     }
 }
