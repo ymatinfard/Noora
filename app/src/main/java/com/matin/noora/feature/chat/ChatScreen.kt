@@ -1,14 +1,21 @@
 package com.matin.noora.feature.chat
 
+import androidx.compose.foundation.ScrollState
+import androidx.compose.foundation.gestures.ScrollableState
+import androidx.compose.foundation.gestures.scrollable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.exclude
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.ime
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.ScaffoldDefaults
@@ -19,10 +26,14 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.layout.ModifierLocalBeyondBoundsLayout
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.room.util.TableInfo
 import com.matin.noora.designsystem.component.MessageInputBar
 import com.matin.noora.designsystem.component.PermissionRequestHandler
 import com.matin.noora.designsystem.component.ChatTopBar
@@ -97,7 +108,7 @@ fun ChatScreen(
                 isSendButtonEnabled = shouldShowSendButton && !state.isMsgPending,
                 onMessageChange = { onIntent(ChatIntent.UpdateMessage(it)) },
                 onSendClick = { onIntent(ChatIntent.SendMessage) },
-                modifier = Modifier.navigationBarsPadding()
+                modifier = Modifier.imePadding()
             )
         }
     }
