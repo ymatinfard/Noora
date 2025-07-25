@@ -49,7 +49,6 @@ fun MessageList(
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
             reverseLayout = true,
-            contentPadding = PaddingValues(8.dp),
             state = listState
         ) {
             item {
@@ -119,9 +118,9 @@ private fun chooseMessageBoxShape(
 ): RoundedCornerShape {
     val baseShape = RoundedCornerShape(cornerRadius)
     return if (isFromCurrentUser) {
-        baseShape.copy(topEnd = CornerSize(0))
+        baseShape.copy(bottomEnd = CornerSize(0))
     } else {
-        baseShape.copy(topStart = CornerSize(0))
+        baseShape.copy(bottomStart = CornerSize(0))
     }
 }
 
