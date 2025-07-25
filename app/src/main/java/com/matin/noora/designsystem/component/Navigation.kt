@@ -82,7 +82,7 @@ fun NooraNavigationSuitScaffold(
                 val selected = currentDestination.isRouteInHierarchy(destination.route)
                 item(
                     onClick = {
-                        appState.navigationTo(destination)
+                        appState.navigationToTopLevelDestination(destination)
                     },
                     selected = selected,
                     icon = {

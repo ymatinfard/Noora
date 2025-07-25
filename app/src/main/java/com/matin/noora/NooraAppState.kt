@@ -5,8 +5,10 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.navigation.NavDestination
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navOptions
 import com.matin.noora.core.common.TopLevelDestination
 import com.matin.noora.feature.chat.navigation.navigateToChatDashboard
 import com.matin.noora.feature.home.navigation.navigateToHome
@@ -27,11 +29,21 @@ class NooraAppState(
             } ?: prevDestination.value
         }
 
-    fun navigationTo(destination: TopLevelDestination) {
+    fun navigationToTopLevelDestination(destination: TopLevelDestination) {
+
+        val navOptions = navOptions {
+            popUpTo(
+                navController.graph.findStartDestination().id
+            ) { saveState = true }
+
+            launchSingleTop = true
+            restoreState = true
+        }
+
         when (destination) {
-            TopLevelDestination.Home -> navController.navigateToHome()
-            TopLevelDestination.ChatDashboard -> navController.navigateToChatDashboard()
-            else -> navController.navigateToHome()
+            TopLevelDestination.Home -> navController.navigateToHome(navOptions)
+            TopLevelDestination.ChatDashboard -> navController.navigateToChatDashboard(navOptions)
+            else -> navController.navigateToHome(navOptions)
         }
     }
 }
