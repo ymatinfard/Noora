@@ -20,6 +20,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteDefaults
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteItemColors
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffold
+import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -43,6 +44,11 @@ fun NooraNavigationSuitScaffold(
     content: @Composable () -> Unit
 ) {
     val currentDestination = appState.currentDestination
+
+    val showBottomNavigation =
+        TopLevelDestination.entries.any {
+            currentDestination.isRouteInHierarchy(it.route)
+        }
 
     val navigationSuitColor = NavigationSuiteItemColors(
         navigationBarItemColors = NavigationBarItemDefaults.colors(
@@ -69,7 +75,9 @@ fun NooraNavigationSuitScaffold(
 
     NavigationSuiteScaffold(
         modifier = modifier,
+        layoutType = if (showBottomNavigation) NavigationSuiteType.NavigationBar else NavigationSuiteType.None,
         navigationSuiteItems = {
+
             TopLevelDestination.entries.forEach { destination ->
                 val selected = currentDestination.isRouteInHierarchy(destination.route)
                 item(
