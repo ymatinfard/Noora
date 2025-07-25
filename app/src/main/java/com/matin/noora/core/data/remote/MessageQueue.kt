@@ -32,10 +32,11 @@ class MessageQueue @Inject constructor(
 
     init {
         appScope.launch {
-            for (message in messageQueue) {
+            for (msgId in messageQueue) {
                 semaphore.withPermit {
-                    val messageEntity = messageDao.getMessageById(message)
-                    sendToServer(messageEntity)
+                    val messageEntity = messageDao.getMessageById(msgId)
+                    if (messageEntity != null)
+                        sendToServer(messageEntity)
                 }
             }
         }

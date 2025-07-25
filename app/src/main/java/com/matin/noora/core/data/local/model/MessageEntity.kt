@@ -11,7 +11,7 @@ import com.matin.noora.core.domain.model.MessageType
 data class MessageEntity(
     @PrimaryKey val id: String,
     val prompt: String,
-    val response: String,
+    val response: String?,
     val categoryId: String,
     val timestamp: Long,
     val type: MessageType,

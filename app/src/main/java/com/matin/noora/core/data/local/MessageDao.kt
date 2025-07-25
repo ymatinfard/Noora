@@ -2,7 +2,9 @@ package com.matin.noora.core.data.local
 
 import androidx.room.Dao
 import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Transaction
 import com.matin.noora.core.data.local.model.MessageEntity
 import com.matin.noora.core.domain.model.MessageState
 import kotlinx.coroutines.flow.Flow
@@ -10,14 +12,14 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface MessageDao {
 
-    @Insert
-    fun insertMessageToDb(message: MessageEntity)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertMessage(message: MessageEntity)
 
     @Query("SELECT * FROM messages WHERE categoryId = :categoryId ORDER BY timestamp DESC")
     fun getAllMessages(categoryId: String): Flow<List<MessageEntity>>
 
     @Query("SELECT * From messages Where id = :id")
-    fun getMessageById(id: String): MessageEntity
+    fun getMessageById(id: String): MessageEntity?
 
     @Query("UPDATE messages SET state = :newState, response = :response WHERE id = :messageId")
     fun updateMessageState(messageId: String, response: String, newState: MessageState)

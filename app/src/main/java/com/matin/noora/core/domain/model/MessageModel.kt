@@ -3,7 +3,6 @@ package com.matin.noora.core.domain.model
 import com.matin.noora.core.common.ChatIdGenerator
 import com.matin.noora.core.data.local.model.MessageEntity
 import com.matin.noora.core.data.remote.MessageRequestNetwork
-import com.matin.noora.core.data.remote.TextAINetwork
 import java.time.Instant
 
 const val DEFAULT_USER_ID = "noora"
@@ -68,9 +67,9 @@ fun Message.toEntity(state: MessageState): MessageEntity {
 fun MessageEntity.toDomain(): Message {
     return Message(
         id = id,
-        prompt = Prompt(value = response),
+        prompt = Prompt(value = prompt),
         categoryId = categoryId,
-        response = response,
+        response = response.orEmpty(),
         createdAt = timestamp,
         state = state,
     )
