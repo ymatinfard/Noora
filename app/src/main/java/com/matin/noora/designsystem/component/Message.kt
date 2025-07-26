@@ -41,14 +41,9 @@ fun MessageList(
     isMsgPending: Boolean,
     listState: LazyListState,
 ) {
-    LaunchedEffect(messages.size) {
-        listState.animateScrollToItem(0)
-    }
-
     Box(modifier = modifier.background(MaterialTheme.colorScheme.background)) {
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
-            reverseLayout = true,
             state = listState
         ) {
             item {
@@ -68,8 +63,8 @@ fun MessageList(
                 items = messages,
                 key = { it.id }
             ) { message ->
-                Spacer(Modifier.height(MESSAGE_VERTICAL_PADDING.dp))
                 TextMessageContent(message)
+                Spacer(Modifier.height(MESSAGE_VERTICAL_PADDING.dp))
             }
         }
     }

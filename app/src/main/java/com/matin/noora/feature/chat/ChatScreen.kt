@@ -15,6 +15,7 @@ import androidx.compose.material3.ScaffoldDefaults
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -61,6 +62,11 @@ fun ChatScreen(
     val coroutineScope = rememberCoroutineScope()
     val listState = rememberLazyListState()
 
+    LaunchedEffect(state.messages.size) {
+        if (state.messages.isNotEmpty())
+            listState.scrollToItem(state.messages.lastIndex)
+    }
+
     val shouldShowSendButton by remember(state.currentMessage) {
         derivedStateOf { state.currentMessage.isNotBlank() }
     }
@@ -86,7 +92,9 @@ fun ChatScreen(
                 .fillMaxSize()
         ) {
             MessageList(
-                modifier = Modifier.weight(1f).padding(horizontal = 12.dp),
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(horizontal = 12.dp),
                 messages = state.messages,
                 listState = listState,
                 isMsgPending = state.isMsgPending,

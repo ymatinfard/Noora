@@ -89,12 +89,12 @@ private fun fakeChatCharacterItems(): List<ChatCharacterItem> = listOf(
         timestamp = Instant.fromEpochMilliseconds(167300000000L), // Example timestamp
     ),
     ChatCharacterItem(
-        name = "Matin",
+        name = "marketing",
         description = "What would you like to know?",
         timestamp = Instant.fromEpochMilliseconds(167300100000L), // Example timestamp
     ),
     ChatCharacterItem(
-        name = "fatemeh",
+        name = "adult",
         description = "I can help you with that.",
         timestamp = Instant.fromEpochMilliseconds(167300200000L), // Example timestamp
     )
@@ -130,17 +130,17 @@ private fun fakeTools(): List<Tool> = listOf(
 private fun fakeCharacters(): List<CharacterNetwork> = listOf<CharacterNetwork>(
     CharacterNetwork(
         id = "A1",
-        "majid",
+        "teacher",
         "You can talk with your trainer!"
     ),
     CharacterNetwork(
         id = "A2",
-        name = "shiva",
+        name = "trainer",
         description = "Chat with me to teach you how to code like a professional"
     ),
     CharacterNetwork(
         id = "A2",
-        name = "fatemeh",
+        name = "legal",
         description = "Chat with me to teach you how to code like a professional"
     )
 )
