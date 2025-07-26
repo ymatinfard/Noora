@@ -70,7 +70,6 @@ fun ChatScreen(
         topBar = {
             ChatTopBar(
                 userName = state.userName,
-                scrollBehavior = scrollBehavior,
                 onBackClick = onNavigateBack,
                 onInfoClick = onInfoClick,
                 onSearchClick = onSearchClick

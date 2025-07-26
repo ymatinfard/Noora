@@ -68,8 +68,8 @@ fun MessageList(
                 items = messages,
                 key = { it.id }
             ) { message ->
-                TextMessageContent(message)
                 Spacer(Modifier.height(MESSAGE_VERTICAL_PADDING.dp))
+                TextMessageContent(message)
             }
         }
     }
