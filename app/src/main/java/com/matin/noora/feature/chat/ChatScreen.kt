@@ -44,7 +44,7 @@ fun ChatScreenRoute(
         onIntent = viewModel::onIntent,
         onNavigateBack = onNavigateBack,
         onInfoClick = onInfoClick,
-        onSearchClick = onSearchClick
+        onSearchCloseClick = onSearchClick
     )
 }
 
@@ -54,7 +54,7 @@ fun ChatScreen(
     state: ChatUiState,
     onIntent: (ChatIntent) -> Unit,
     onInfoClick: () -> Unit = {},
-    onSearchClick: () -> Unit = {},
+    onSearchCloseClick: () -> Unit = {},
     onNavigateBack: () -> Unit,
 ) {
     val topBarState = rememberTopAppBarState()
@@ -77,8 +77,7 @@ fun ChatScreen(
             ChatTopBar(
                 userName = state.userName,
                 onBackClick = onNavigateBack,
-                onInfoClick = onInfoClick,
-                onSearchClick = onSearchClick
+                onSearchCloseClick = onSearchCloseClick
             )
         },
         contentWindowInsets = ScaffoldDefaults
