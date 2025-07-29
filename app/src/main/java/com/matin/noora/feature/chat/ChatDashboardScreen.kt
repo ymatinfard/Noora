@@ -55,7 +55,7 @@ fun ChatDashboardScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(horizontal = 16.dp)
+            .padding(horizontal = 16.dp),
     ) {
         NooraTopAppBar(title = "Chat", userScore = userScore)
         Spacer(Modifier.height(32.dp))

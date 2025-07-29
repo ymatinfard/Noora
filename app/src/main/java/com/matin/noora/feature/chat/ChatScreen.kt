@@ -18,8 +18,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
@@ -64,11 +66,15 @@ fun ChatScreen(
 
     LaunchedEffect(state.messages.size) {
         if (state.messages.isNotEmpty())
-            listState.scrollToItem(state.messages.lastIndex)
+            listState.scrollToItem(0)
     }
 
     val shouldShowSendButton by remember(state.currentMessage) {
         derivedStateOf { state.currentMessage.isNotBlank() }
+    }
+
+    var  searchQuery by remember {
+        mutableStateOf("")
     }
 
     Scaffold(
@@ -77,7 +83,13 @@ fun ChatScreen(
             ChatTopBar(
                 userName = state.userName,
                 onBackClick = onNavigateBack,
-                onSearchCloseClick = onSearchCloseClick
+                onSearchCloseClick = {
+                    searchQuery = ""
+                },
+                query = searchQuery,
+                onQueryChange = { newQuery ->
+                    searchQuery = newQuery
+                },
             )
         },
         contentWindowInsets = ScaffoldDefaults
@@ -97,6 +109,7 @@ fun ChatScreen(
                 messages = state.messages,
                 listState = listState,
                 isMsgPending = state.isMsgPending,
+                query = searchQuery,
             )
 
             MessageInputBar(

@@ -6,7 +6,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -20,10 +19,16 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -40,10 +45,12 @@ fun MessageList(
     messages: List<Message>,
     isMsgPending: Boolean,
     listState: LazyListState,
+    query: String = "",
 ) {
     Box(modifier = modifier.background(MaterialTheme.colorScheme.background)) {
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
+            reverseLayout = true,
             state = listState
         ) {
             item {
@@ -63,7 +70,7 @@ fun MessageList(
                 items = messages,
                 key = { it.id }
             ) { message ->
-                TextMessageContent(message)
+                TextMessageContent(message, query)
                 Spacer(Modifier.height(MESSAGE_VERTICAL_PADDING.dp))
             }
         }
@@ -120,33 +127,87 @@ private fun chooseMessageBoxShape(
 }
 
 @Composable
-private fun TextMessageContent(message: Message) {
+private fun TextMessageContent(message: Message, query: String) {
     Column(
         verticalArrangement = Arrangement.spacedBy(MESSAGE_VERTICAL_PADDING.dp),
     ) {
         if (message.prompt.value.isNotEmpty())
-            TextMessage(message.prompt.value, message.createdAt, true)
+            TextMessage(message.prompt.value, message.createdAt, query, true)
 
         if (message.response.isNotEmpty()) {
-            TextMessage(message.response, message.createdAt, false)
+            TextMessage(message.response, message.createdAt, query, false)
         }
     }
 }
 
 @Composable
-private fun TextMessage(message: String, timestamp: Long, isFromCurrentUser: Boolean) {
+private fun TextMessage(
+    message: String,
+    timestamp: Long,
+    query: String,
+    isFromCurrentUser: Boolean
+) {
+
+    val trimmedQuery = query.trim()
+    val text = if (trimmedQuery.isNotEmpty() && message.contains(
+            trimmedQuery,
+            ignoreCase = true
+        )
+    ) {
+        remember(message, trimmedQuery) {
+            highlightText(message, trimmedQuery)
+        }
+    } else {
+        message
+    }
+
     MessageBubbleContainer(isFromCurrentUser) {
         Column(verticalArrangement = Arrangement.Bottom) {
-            Text(
-                text = message,
-                fontSize = MESSAGE_TEXT_SIZE.sp,
-                color = chooseOnSurfaceColorFor(isFromCurrentUser)
-            )
+            when (text) {
+                is AnnotatedString -> {
+                    Text(
+                        text = text,
+                        fontSize = MESSAGE_TEXT_SIZE.sp,
+                        color = chooseOnSurfaceColorFor(isFromCurrentUser)
+                    )
+                }
+
+                is String -> {
+                    Text(
+                        text = text,
+                        fontSize = MESSAGE_TEXT_SIZE.sp,
+                        color = chooseOnSurfaceColorFor(isFromCurrentUser)
+                    )
+                }
+            }
+
             MessageTimeStamp(
                 timeStamp = timestamp,
                 isFromCurrentUser = isFromCurrentUser,
                 modifier = Modifier.align(alignment = if (isFromCurrentUser) Alignment.End else Alignment.Start)
             )
+        }
+    }
+}
+
+fun highlightText(text: String, query: String): AnnotatedString {
+
+    return buildAnnotatedString {
+        var currentIndex = 0
+        var matchIndex = text.indexOf(query, currentIndex)
+
+        while (matchIndex >= 0) {
+            val endIndex = matchIndex + query.length
+            append(text.substring(currentIndex, matchIndex))
+            withStyle(style = SpanStyle(background = Color.Yellow, fontWeight = FontWeight.Bold)) {
+                append(text.substring(matchIndex, endIndex))
+            }
+            currentIndex = endIndex
+            matchIndex = text.indexOf(query, currentIndex)
+        }
+
+        if (currentIndex < text.length) {
+            append(text.substring(currentIndex))
         }
     }
 }

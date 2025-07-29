@@ -22,6 +22,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -58,6 +59,12 @@ fun ChatTopBar(
     var isSearchEnabled by remember { mutableStateOf(false) }
     val focusRequester = remember { FocusRequester() }
 
+    LaunchedEffect(isSearchEnabled) {
+        if (isSearchEnabled) {
+            focusRequester.requestFocus()
+        }
+    }
+
     CenterAlignedTopAppBar(
         title = {
             AnimatedContent(isSearchEnabled, label = "") { isSearching ->
@@ -67,6 +74,7 @@ fun ChatTopBar(
                         onQueryChange = onQueryChange,
                         onCloseClick = {
                             isSearchEnabled = false
+                            focusRequester.freeFocus()
                             onSearchCloseClick()
                         },
                         focusRequester = focusRequester,
