@@ -20,7 +20,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteDefaults
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteItemColors
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffold
-import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -73,56 +72,58 @@ fun NooraNavigationSuitScaffold(
         )
     )
 
-    NavigationSuiteScaffold(
-        modifier = modifier,
-        layoutType = if (showBottomNavigation) NavigationSuiteType.NavigationBar else NavigationSuiteType.None,
-        navigationSuiteItems = {
+    if (showBottomNavigation) {
+        NavigationSuiteScaffold(
+            modifier = modifier,
+            navigationSuiteItems = {
+                TopLevelDestination.entries.forEach { destination ->
+                    val selected = currentDestination.isRouteInHierarchy(destination.route)
+                    item(
+                        onClick = {
+                            appState.navigationToTopLevelDestination(destination)
+                        },
+                        selected = selected,
+                        icon = {
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.spacedBy(4.dp),
+                                modifier = Modifier.padding(top = 4.dp)
+                            ) {
+                                val animatedValue =
+                                    animateDpAsState(
+                                        targetValue = if (selected) 80.dp else 0.dp,
+                                        animationSpec = tween(durationMillis = 100)
+                                    )
 
-            TopLevelDestination.entries.forEach { destination ->
-                val selected = currentDestination.isRouteInHierarchy(destination.route)
-                item(
-                    onClick = {
-                        appState.navigationToTopLevelDestination(destination)
-                    },
-                    selected = selected,
-                    icon = {
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.spacedBy(4.dp),
-                            modifier = Modifier.padding(top = 4.dp)
-                        ) {
-                            val animatedValue =
-                                animateDpAsState(
-                                    targetValue = if (selected) 80.dp else 0.dp,
-                                    animationSpec = tween(durationMillis = 100)
+                                Box(
+                                    Modifier
+                                        .width(animatedValue.value)
+                                        .height(3.dp)
+                                        .background(
+                                            MaterialTheme.colorScheme.primary,
+                                            shape = RoundedCornerShape(1.5.dp)
+                                        )
                                 )
 
-                            Box(
-                                Modifier
-                                    .width(animatedValue.value)
-                                    .height(3.dp)
-                                    .background(
-                                        MaterialTheme.colorScheme.primary,
-                                        shape = RoundedCornerShape(1.5.dp)
-                                    )
-                            )
-
-                            Icon(
-                                painter = painterResource(destination.icon),
-                                contentDescription = destination.title
-                            )
-                        }
-                    },
-                    colors = navigationSuitColor,
-                    label = { Text(text = destination.title) }
-                )
-            }
-        },
-        navigationSuiteColors = NavigationSuiteDefaults.colors(
-            navigationBarContainerColor = Color.Transparent,
-        ),
-        content = content
-    )
+                                Icon(
+                                    painter = painterResource(destination.icon),
+                                    contentDescription = destination.title
+                                )
+                            }
+                        },
+                        colors = navigationSuitColor,
+                        label = { Text(text = destination.title) }
+                    )
+                }
+            },
+            navigationSuiteColors = NavigationSuiteDefaults.colors(
+                navigationBarContainerColor = Color.Transparent,
+            ),
+            content = content
+        )
+    } else {
+        content()
+    }
 }
 
 fun NavDestination?.isRouteInHierarchy(route: KClass<*>): Boolean {
