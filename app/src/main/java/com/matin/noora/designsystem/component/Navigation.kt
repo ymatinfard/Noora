@@ -38,16 +38,10 @@ import kotlin.reflect.KClass
 
 @Composable
 fun NooraNavigationSuitScaffold(
-    modifier: Modifier = Modifier,
     appState: NooraAppState = rememberNooraAppState(),
-    content: @Composable () -> Unit
+    content: @Composable () -> Unit,
 ) {
     val currentDestination = appState.currentDestination
-
-    val showBottomNavigation =
-        TopLevelDestination.entries.any {
-            currentDestination.isRouteInHierarchy(it.route)
-        }
 
     val navigationSuitColor = NavigationSuiteItemColors(
         navigationBarItemColors = NavigationBarItemDefaults.colors(
@@ -72,10 +66,9 @@ fun NooraNavigationSuitScaffold(
         )
     )
 
-    if (showBottomNavigation) {
-        NavigationSuiteScaffold(
-            modifier = modifier,
-            navigationSuiteItems = {
+    //   if (showBottomNavigation) {
+    NavigationSuiteScaffold(
+        navigationSuiteItems = {
                 TopLevelDestination.entries.forEach { destination ->
                     val selected = currentDestination.isRouteInHierarchy(destination.route)
                     item(
@@ -115,15 +108,14 @@ fun NooraNavigationSuitScaffold(
                         label = { Text(text = destination.title) }
                     )
                 }
-            },
-            navigationSuiteColors = NavigationSuiteDefaults.colors(
-                navigationBarContainerColor = Color.Transparent,
-            ),
-            content = content
+        },
+        navigationSuiteColors = NavigationSuiteDefaults.colors(
+            navigationBarContainerColor = Color.Transparent,
         )
-    } else {
+    ) {
         content()
     }
+
 }
 
 fun NavDestination?.isRouteInHierarchy(route: KClass<*>): Boolean {
@@ -151,6 +143,5 @@ annotation class ThemePreviews
 @Composable
 private fun NavigationPreview() {
     NooraTheme {
-        NooraNavigationSuitScaffold {}
     }
 }

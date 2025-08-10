@@ -1,35 +1,33 @@
 package com.matin.noora.navigation
 
+import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.runtime.Composable
-import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
-import com.matin.noora.feature.chat.navigation.chatDashboardScreen
+import com.matin.noora.NooraAppState
 import com.matin.noora.feature.chat.navigation.chatScreen
-import com.matin.noora.feature.chat.navigation.navigateToChat
-import com.matin.noora.feature.home.navigation.HomeRoute
-import com.matin.noora.feature.home.navigation.homeScreen
+import com.matin.noora.feature.maindashboard.navigation.MainDashboardRoute
+import com.matin.noora.feature.maindashboard.navigation.mainDashboardRoute
 
 @Composable
-fun NooraNavHost(navController: NavHostController) {
+fun NooraNavHost(appState: NooraAppState) {
     NavHost(
-        startDestination = HomeRoute,
-        navController = navController,
+        startDestination = MainDashboardRoute,
+        navController = appState.navController,
         enterTransition = {
-            fadeIn(animationSpec = tween(400))
+            slideIntoContainer(
+                AnimatedContentTransitionScope.SlideDirection.Left,
+                animationSpec = tween(500)
+            )
         },
-        exitTransition = {
-            fadeOut(animationSpec = tween(400))
-        }
     ) {
-        homeScreen()
-        chatDashboardScreen(onChatCharacterClicked = {
-            navController.navigateToChat(it.id, it.name)
-        })
+        mainDashboardRoute(
+            onChatCharacterItemClicked = { category ->
+                appState.navigateToChat(category.id, category.name)
+            }
+        )
         chatScreen(
-            onNavigateBack = { navController.popBackStack() },
+            onNavigateBack = { appState.navigateBack() },
             onSearchClick = { },
             onInfoClick = {},
         )

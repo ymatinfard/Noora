@@ -15,7 +15,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
@@ -38,29 +37,24 @@ fun MessageInputBar(
     onSendClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Surface(
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
+            .fillMaxWidth()
+            .background(color = MaterialTheme.colorScheme.primary)
+            .padding(horizontal = 8.dp)
     ) {
+        MessageTextField(
+            value = message,
+            onValueChange = onMessageChange,
+            onSendClick = onSendClick,
+            modifier = Modifier.weight(1f)
+        )
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(color = MaterialTheme.colorScheme.primary)
-                .padding(start = 8.dp, end = 8.dp)
+            horizontalArrangement = Arrangement.spacedBy(6.dp)
         ) {
-            MessageTextField(
-                value = message,
-                onValueChange = onMessageChange,
-                onSendClick = onSendClick,
-                modifier = Modifier.weight(1f)
-            )
-
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(6.dp)
-            ) {
-                SendButton(onClick = onSendClick, isEnabled = isSendButtonEnabled)
-            }
+            SendButton(onClick = onSendClick, isEnabled = isSendButtonEnabled)
         }
     }
 }
@@ -115,7 +109,9 @@ private fun SendButton(onClick: () -> Unit, isEnabled: Boolean) {
         Icon(
             modifier = Modifier.size(INPUT_ICON_SIZE.dp),
             imageVector = Icons.AutoMirrored.Filled.Send,
-            tint = if (isEnabled) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onPrimary.copy(.3f),
+            tint = if (isEnabled) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onPrimary.copy(
+                .3f
+            ),
             contentDescription = "Send message"
         )
     }

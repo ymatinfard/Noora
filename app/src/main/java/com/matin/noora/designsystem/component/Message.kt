@@ -49,7 +49,6 @@ fun MessageList(
 ) {
     Box(modifier = modifier.background(MaterialTheme.colorScheme.background)) {
         LazyColumn(
-            modifier = Modifier.fillMaxSize(),
             reverseLayout = true,
             state = listState
         ) {
@@ -70,8 +69,8 @@ fun MessageList(
                 items = messages,
                 key = { it.id }
             ) { message ->
-                TextMessageContent(message, query)
                 Spacer(Modifier.height(MESSAGE_VERTICAL_PADDING.dp))
+                TextMessageContent(message, query)
             }
         }
     }

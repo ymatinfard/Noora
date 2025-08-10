@@ -11,11 +11,15 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data object ChatDashboardRoute
+
 @Serializable
 data class ChatRoute(val categoryId: String, val name: String)
 
-fun NavController.navigateToChatDashboard(navOptions: NavOptions? = null) = this.navigate(ChatDashboardRoute, navOptions)
-fun NavController.navigateToChat(categoryId: String, name: String) = this.navigate(ChatRoute(categoryId, name))
+fun NavController.navigateToChatDashboard(navOptions: NavOptions? = null) =
+    this.navigate(ChatDashboardRoute, navOptions)
+
+fun NavController.navigateToChat(categoryId: String, name: String) =
+    this.navigate(ChatRoute(categoryId, name))
 
 fun NavGraphBuilder.chatDashboardScreen(onChatCharacterClicked: (ChatCharacterItem) -> Unit) {
     composable<ChatDashboardRoute> {
@@ -28,7 +32,7 @@ fun NavGraphBuilder.chatScreen(
     onSearchClick: () -> Unit = {},
     onInfoClick: () -> Unit = {},
 ) {
-    composable<ChatRoute> {
+    composable<ChatRoute>{
         ChatScreenRoute(
             onNavigateBack = onNavigateBack,
             onSearchClick = onSearchClick,
