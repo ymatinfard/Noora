@@ -2,28 +2,21 @@ package com.matin.noora.feature.chat
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.exclude
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.imePadding
-import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.ScaffoldDefaults
-import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -34,7 +27,6 @@ import com.matin.noora.designsystem.component.PermissionRequestHandler
 
 @Composable
 fun ChatScreenRoute(
-    modifier: Modifier = Modifier,
     viewModel: ChatViewModel = hiltViewModel(),
     onNavigateBack: () -> Unit,
     onInfoClick: () -> Unit = {},
@@ -59,9 +51,6 @@ fun ChatScreen(
     onSearchCloseClick: () -> Unit = {},
     onNavigateBack: () -> Unit,
 ) {
-    val topBarState = rememberTopAppBarState()
-    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(topBarState)
-    val coroutineScope = rememberCoroutineScope()
     val listState = rememberLazyListState()
 
     LaunchedEffect(state.messages.size) {
@@ -73,35 +62,25 @@ fun ChatScreen(
         derivedStateOf { state.currentMessage.isNotBlank() }
     }
 
-    var  searchQuery by remember {
+    var searchQuery by remember {
         mutableStateOf("")
     }
 
-    Scaffold(
-        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-        topBar = {
-            ChatTopBar(
-                userName = state.userName,
-                onBackClick = onNavigateBack,
-                onSearchCloseClick = {
-                    searchQuery = ""
-                },
-                query = searchQuery,
-                onQueryChange = { newQuery ->
-                    searchQuery = newQuery
-                },
-            )
-        },
-        contentWindowInsets = ScaffoldDefaults
-            .contentWindowInsets
-            .exclude(WindowInsets.navigationBars)
-            .exclude(WindowInsets.ime),
-    ) { innerPadding ->
-        Column(
-            Modifier
-                .padding(innerPadding)
-                .fillMaxSize()
-        ) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize().consumeWindowInsets(WindowInsets.systemBars)
+    ) {
+        ChatTopBar(
+            userName = state.userName,
+            onBackClick = onNavigateBack,
+            onSearchCloseClick = {
+                searchQuery = ""
+            },
+            query = searchQuery,
+            onQueryChange = { newQuery ->
+                searchQuery = newQuery
+            })
+        Column(modifier = Modifier.weight(1f)) {
             MessageList(
                 modifier = Modifier
                     .weight(1f)

@@ -54,7 +54,7 @@ fun ChatTopBar(
     onSearchCloseClick: () -> Unit = {},
     profileImageRes: Int = R.drawable.noora,
     query: String = "",
-    onQueryChange: (String) -> Unit = {}
+    onQueryChange: (String) -> Unit = {},
 ) {
     var isSearchEnabled by remember { mutableStateOf(false) }
     val focusRequester = remember { FocusRequester() }
@@ -241,5 +241,5 @@ private fun SearchBarPreview() {
 @Preview
 @Composable
 fun ChatBarPreview(modifier: Modifier = Modifier) {
-    ChatTopBar()
+  // ChatTopBar()
 }
