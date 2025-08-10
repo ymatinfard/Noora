@@ -40,7 +40,9 @@ fun ChatDashboardScreenRoute(viewModel: ChatDashboardScreenViewModel = hiltViewM
         chatRecentHistoryState = chatRecentHistoryState,
         chatCharactersState = chatCharactersState,
         onChatRecentHistoryItemClicked = viewModel::onChatRecentHistoryItemClicked,
-        onChatCharacterClicked = onChatCharacterClicked
+        onChatCharacterClicked = {
+            viewModel.chatWarmUp(it.id)
+            onChatCharacterClicked(it) }
     )
 }
 

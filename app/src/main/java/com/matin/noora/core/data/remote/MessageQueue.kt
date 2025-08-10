@@ -33,10 +33,12 @@ class MessageQueue @Inject constructor(
     init {
         appScope.launch {
             for (msgId in messageQueue) {
-                semaphore.withPermit {
-                    val messageEntity = messageDao.getMessageById(msgId)
-                    if (messageEntity != null)
-                        sendToServer(messageEntity)
+                launch {
+                    semaphore.withPermit {
+                        val messageEntity = messageDao.getMessageById(msgId)
+                        if (messageEntity != null)
+                            sendToServer(messageEntity)
+                    }
                 }
             }
         }
@@ -50,7 +52,7 @@ class MessageQueue @Inject constructor(
         try {
             val response = genAIApi.sendMessage(message.toDomain().toNetwork())
 
-            updateMessageState(message.id, response.text,MessageState.RECEIVED)
+            updateMessageState(message.id, response.text, MessageState.RECEIVED)
         } catch (e: Exception) {
             try {
                 updateMessageState(message.id, response = "", MessageState.FAILED)

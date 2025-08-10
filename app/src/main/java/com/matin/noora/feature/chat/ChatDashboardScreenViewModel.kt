@@ -90,6 +90,10 @@ class ChatDashboardScreenViewModel @Inject constructor(
         // This could navigate to a chat screen with the selected character
     }
 
+    fun chatWarmUp(categoryId: String) {
+        aiRepository.chatWarmUp(categoryId)
+    }
+
     companion object {
         private const val WHILE_SUBSCRIBED_TIMEOUT_MS = 5_000L
     }

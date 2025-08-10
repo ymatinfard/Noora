@@ -1,5 +1,6 @@
 package com.matin.noora.core.data
 
+import androidx.collection.LruCache
 import com.matin.noora.R
 import com.matin.noora.core.data.di.IoDispatcher
 import com.matin.noora.core.data.local.MessageDao
@@ -16,12 +17,17 @@ import com.matin.noora.core.domain.model.toDomain
 import com.matin.noora.core.domain.model.toEntity
 import com.matin.noora.core.domain.repository.AIRepository
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import kotlin.time.ExperimentalTime
@@ -31,8 +37,19 @@ class AIRepositoryImpl @Inject constructor(
     private val genAIApi: GenAIApi,
     private val messageDao: MessageDao,
     private val messageQueue: MessageQueue,
+    private val appScope: CoroutineScope,
     @IoDispatcher val ioDispatcher: CoroutineDispatcher
 ) : AIRepository {
+
+    private val cache = LruCache<String, List<Message>>(maxSize = 200 * 1024)
+
+    override fun getLastMessageSnapshot(categoryId: String) = cache[categoryId]
+
+    override fun chatWarmUp(categoryId: String) {
+        appScope.launch {
+            getChatMessages(categoryId).first()
+        }
+    }
 
     override suspend fun insertToDb(prompt: Prompt, categoryId: String) =
         withContext(ioDispatcher) {
@@ -56,6 +73,11 @@ class AIRepositoryImpl @Inject constructor(
     override fun getChatMessages(categoryId: String): Flow<List<Message>> {
         return messageDao.getAllMessages(categoryId).distinctUntilChanged()
             .map { entityList -> entityList.map { it.toDomain() } }
+            .onEach {
+                cache.put(categoryId, it)
+            }.onStart {
+                emit(cache[categoryId] ?: emptyList())
+            }
     }
 
     override fun getChatCharacters(): Flow<List<ChatCharacterItem>> = flow {

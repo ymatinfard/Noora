@@ -13,4 +13,6 @@ interface AIRepository {
     fun getTools(): Flow<List<Tool>>
     fun getChatRecentHistory(): Flow<List<ChatCharacterItem>>
     fun getChatMessages(categoryId: String): Flow<List<Message>>
+    fun getLastMessageSnapshot(categoryId: String): List<Message>?
+    fun chatWarmUp(categoryId: String)
 }
