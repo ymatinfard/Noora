@@ -5,7 +5,7 @@ import com.matin.noora.R
 import com.matin.noora.core.data.di.IoDispatcher
 import com.matin.noora.core.data.local.MessageDao
 import com.matin.noora.core.data.remote.CharacterNetwork
-import com.matin.noora.core.data.remote.GenAIApi
+import com.matin.noora.core.data.remote.NooraApi
 import com.matin.noora.core.data.remote.MessageQueue
 import com.matin.noora.core.domain.model.ChatCharacterItem
 import com.matin.noora.core.domain.model.Message
@@ -34,7 +34,7 @@ import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
 class AIRepositoryImpl @Inject constructor(
-    private val genAIApi: GenAIApi,
+    private val nooraApi: NooraApi,
     private val messageDao: MessageDao,
     private val messageQueue: MessageQueue,
     private val appScope: CoroutineScope,

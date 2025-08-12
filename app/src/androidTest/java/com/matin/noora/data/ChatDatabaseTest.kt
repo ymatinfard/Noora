@@ -39,7 +39,7 @@ class ChatDatabaseTest {
 
             ).toEntity(MessageState.PENDING)
 
-        messageDao.insertMessageToDb(entity)
+        messageDao.insertMessage(entity)
         val result = messageDao.getAllMessages("noora").first()
 
         assert(result.contains(entity))
@@ -62,8 +62,8 @@ class ChatDatabaseTest {
             response = "content"
         ).toEntity(state = MessageState.PENDING)
 
-        messageDao.insertMessageToDb(entity1)
-        messageDao.insertMessageToDb(entity2)
+        messageDao.insertMessage(entity1)
+        messageDao.insertMessage(entity2)
 
         val result = messageDao.getAllMessages(categoryId).first()
 
@@ -82,7 +82,7 @@ class ChatDatabaseTest {
             response = "content"
         ).toEntity(state = MessageState.PENDING)
 
-        messageDao.insertMessageToDb(entity)
+        messageDao.insertMessage(entity)
         messageDao.deleteAllMessages()
 
         val result = messageDao.getAllMessages(categoryId).first()
@@ -100,7 +100,7 @@ class ChatDatabaseTest {
             response = "content"
         ).toEntity(state = MessageState.PENDING)
 
-        messageDao.insertMessageToDb(entity)
+        messageDao.insertMessage(entity)
         messageDao.updateMessageState(entity.id, response = "", MessageState.SENT)
         val result = messageDao.getAllMessages("noora").first()
 

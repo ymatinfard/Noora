@@ -14,6 +14,7 @@ class GenerateTextUseCase @Inject constructor(
 ) {
     suspend operator fun invoke(prompt: Prompt, category: PromptCategory): Result<TextAIResponse> {
         val promptRequest = promptAnalyzer.createPromptRequest(prompt.value, category)
-        return aiRepository.getTextResponse(promptRequest)
+      //  return aiRepository.getTextResponse(promptRequest)
+        TODO()
     }
 }

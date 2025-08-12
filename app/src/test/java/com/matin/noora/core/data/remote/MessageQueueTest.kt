@@ -1,6 +1,6 @@
 import com.matin.noora.core.data.local.MessageDao
 import com.matin.noora.core.data.local.model.MessageEntity
-import com.matin.noora.core.data.remote.GenAIApi
+import com.matin.noora.core.data.remote.NooraApi
 import com.matin.noora.core.data.remote.MessageQueue
 import com.matin.noora.core.data.remote.TextAINetwork
 import com.matin.noora.core.domain.model.Message
@@ -31,7 +31,7 @@ import kotlin.time.ExperimentalTime
 @OptIn(ExperimentalCoroutinesApi::class)
 class MessageQueueTest {
 
-    private lateinit var genAIApi: GenAIApi
+    private lateinit var nooraApi: NooraApi
     private lateinit var messageDao: MessageDao
     private lateinit var messageQueue: MessageQueue
     private lateinit var testScope: TestScope
@@ -39,13 +39,13 @@ class MessageQueueTest {
 
     @Before
     fun setUp() {
-        genAIApi = mockk()
+        nooraApi = mockk()
         messageDao = mockk()
         testDispatcher = StandardTestDispatcher()
         testScope = TestScope(testDispatcher)
 
         messageQueue = MessageQueue(
-            genAIApi = genAIApi,
+            genAIApi = nooraApi,
             messageDao = messageDao,
             appScope = testScope,
             ioDispatcher = testDispatcher
@@ -86,13 +86,13 @@ class MessageQueueTest {
 
         every { messageDao.updateMessageState(any(), any(), any()) } just Runs
         coEvery { messageDao.getMessageById(messageId) } returns messageEntity
-        coEvery { genAIApi.sendMessage(networkRequest) } returns apiResponse
+        coEvery { nooraApi.sendMessage(networkRequest) } returns apiResponse
 
         messageQueue.enqueue(messageId)
         advanceUntilIdle()
 
         coVerify(exactly = 1) { messageDao.getMessageById(any()) }
-        coVerify(exactly = 1) { genAIApi.sendMessage(any()) }
+        coVerify(exactly = 1) { nooraApi.sendMessage(any()) }
         verify(exactly = 1) {
             messageDao.updateMessageState(any(), any(), any())
         }

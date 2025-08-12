@@ -22,10 +22,10 @@ class AIRepositoryImplTest {
     val testDispatcher = StandardTestDispatcher()
     val testScope = TestScope(testDispatcher)
 
-    val genAIApi = mockk<GenAIApi>()
+    val nooraApi = mockk<NooraApi>()
     val messageDao = mockk<MessageDao>()
     val messageQueue = mockk<MessageQueue>()
-    val repository = AIRepositoryImpl(genAIApi, messageDao, messageQueue,testDispatcher)
+    val repository = AIRepositoryImpl(nooraApi, messageDao, messageQueue,testScope, testDispatcher)
 
     @Test
     fun `insertToDb should insert message into db`() {
@@ -34,15 +34,15 @@ class AIRepositoryImplTest {
             val categoryId = "noora"
             val messageSlot = slot<MessageEntity>()
 
-            coEvery { genAIApi.sendMessage(any()) } returns mockk {
+            coEvery { nooraApi.sendMessage(any()) } returns mockk {
                 //    every { toEntity() } returns mockk()
             }
-            every { messageDao.insertMessageToDb(capture(messageSlot)) } just Runs
+            every { messageDao.insertMessage(capture(messageSlot)) } just Runs
 
             repository.insertToDb(Prompt(text), categoryId)
 
             assertEquals(text, messageSlot.captured.prompt)
-            coVerify(exactly = 1) { messageDao.insertMessageToDb(any()) }
+            coVerify(exactly = 1) { messageDao.insertMessage(any()) }
         }
     }
 }

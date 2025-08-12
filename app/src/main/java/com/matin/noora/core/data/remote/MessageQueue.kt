@@ -19,7 +19,7 @@ import kotlinx.coroutines.withContext
 
 
 class MessageQueue @Inject constructor(
-    private val genAIApi: GenAIApi,
+    private val genAIApi: NooraApi,
     private val messageDao: MessageDao,
     private val appScope: CoroutineScope,
     @IoDispatcher val ioDispatcher: CoroutineDispatcher,

@@ -7,8 +7,7 @@ import com.matin.noora.core.data.local.ChatLocalRepositoryImpl
 import com.matin.noora.core.data.local.SettingsRepositoryImpl
 import com.matin.noora.core.data.AIRepositoryImpl
 import com.matin.noora.core.data.local.MessageDao
-import com.matin.noora.core.data.remote.AuthApi
-import com.matin.noora.core.data.remote.GenAIApi
+import com.matin.noora.core.data.remote.NooraApi
 import com.matin.noora.core.domain.repository.AIRepository
 import com.matin.noora.core.domain.repository.ChatLocalRepository
 import com.matin.noora.core.domain.repository.SettingsRepository
@@ -49,19 +48,12 @@ object DataProviderModule {
 
     @Provides
     @Singleton
-    fun providesGenAIApi(): GenAIApi {
+    fun provideNooraApi(): NooraApi {
         return Retrofit.Builder()
-            .baseUrl("https://api.google.example.com/")
+            .baseUrl("https://noora.com/ai/")
             .addConverterFactory(GsonConverterFactory.create())
             .build()
-            .create(GenAIApi::class.java)
-    }
-
-    @Provides
-    @Singleton
-    fun provideAuthApi(): AuthApi {
-        return Retrofit.Builder().baseUrl("https://myserver/auth/")
-            .addConverterFactory(GsonConverterFactory.create()).build().create(AuthApi::class.java)
+            .create(NooraApi::class.java)
     }
 
     @IoDispatcher
