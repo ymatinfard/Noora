@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "506634205458",
+    "project_id": "noora-4a210",
+    "storage_bucket": "noora-4a210.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:506634205458:android:676ebef2f6658819e2dbcb",
+        "android_client_info": {
+          "package_name": "com.matin.noora"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "506634205458-siv5f6dej2d36eubm7ggrdteambpdog5.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.matin.noora",
+            "certificate_hash": "be86a3bc58f13d923ab2ad94b537625aa7e0ef1e"
+          }
+        },
+        {
+          "client_id": "506634205458-bnpof7sci41c0diepfh1ad782rcc473k.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAUoHL0dYR1l1wNK6_GgSElhjvBmkCTMSY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "506634205458-bnpof7sci41c0diepfh1ad782rcc473k.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

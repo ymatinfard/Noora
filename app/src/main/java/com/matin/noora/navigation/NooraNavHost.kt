@@ -5,12 +5,13 @@ import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import com.matin.noora.NooraAppState
+import com.matin.noora.feature.auth.navigation.signInScreen
 import com.matin.noora.feature.chat.navigation.chatScreen
 import com.matin.noora.feature.maindashboard.navigation.MainDashboardRoute
 import com.matin.noora.feature.maindashboard.navigation.mainDashboardRoute
 
 @Composable
-fun NooraNavHost(appState: NooraAppState) {
+fun NooraNavHost(googleSignInClick: () -> Unit, appState: NooraAppState) {
     NavHost(
         startDestination = MainDashboardRoute,
         navController = appState.navController,
@@ -31,5 +32,7 @@ fun NooraNavHost(appState: NooraAppState) {
             onSearchClick = { },
             onInfoClick = {},
         )
+
+        signInScreen(googleSignInClick)
     }
 }

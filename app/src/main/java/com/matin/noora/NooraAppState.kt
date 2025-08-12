@@ -10,6 +10,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navOptions
 import com.matin.noora.core.common.TopLevelDestination
+import com.matin.noora.feature.auth.navigation.navigateToSignIn
 import com.matin.noora.feature.chat.navigation.navigateToChat
 import com.matin.noora.feature.chat.navigation.navigateToChatDashboard
 import com.matin.noora.feature.home.navigation.navigateToHome
@@ -54,6 +55,10 @@ class NooraAppState(
 
     fun navigateToChat(categoryId: String, categoryName: String) {
         navController.navigateToChat(categoryId, categoryName)
+    }
+
+    fun navigateToSignIn() {
+        navController.navigateToSignIn()
     }
 }
 

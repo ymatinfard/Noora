@@ -11,9 +11,10 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
+import javax.inject.Inject
 
 @HiltViewModel
-class SignInScreenViewModel(private val authRepository: AuthRepository) : ViewModel() {
+class SignInScreenViewModel @Inject constructor(private val authRepository: AuthRepository) : ViewModel() {
 
     val usernameState = MutableStateFlow("")
     val passwordState = MutableStateFlow("")

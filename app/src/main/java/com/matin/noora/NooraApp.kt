@@ -8,10 +8,10 @@ import androidx.compose.ui.Modifier
 import com.matin.noora.navigation.NooraNavHost
 
 @Composable
-fun NooraApp(appState: NooraAppState = rememberNooraAppState()) {
+fun NooraApp(googleSignInClick: () -> Unit, appState: NooraAppState = rememberNooraAppState()) {
     Scaffold {
         Box(modifier = Modifier.padding(it)) {
-            NooraNavHost(appState)
+            NooraNavHost(googleSignInClick, appState)
         }
     }
 }
