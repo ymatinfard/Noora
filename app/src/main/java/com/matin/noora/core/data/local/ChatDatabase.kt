@@ -10,7 +10,7 @@ import com.matin.noora.core.data.local.model.MessageEntity
     version = 1,
     exportSchema = false
 )
-@TypeConverters(MessageStateConverter::class)
-abstract class ChatDatabase: RoomDatabase() {
+@TypeConverters(MessageStateConverter::class, MessageAuthorConvertor::class)
+abstract class ChatDatabase : RoomDatabase() {
     abstract fun messageDao(): MessageDao
 }

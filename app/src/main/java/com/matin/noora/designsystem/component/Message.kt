@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -33,6 +32,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.matin.noora.core.domain.model.Message
+import com.matin.noora.core.domain.model.MessageAuthor
 
 private const val MESSAGE_BUBBLE_CORNER_RADIUS = 16
 private const val MESSAGE_TEXT_SIZE = 20
@@ -130,12 +130,7 @@ private fun TextMessageContent(message: Message, query: String) {
     Column(
         verticalArrangement = Arrangement.spacedBy(MESSAGE_VERTICAL_PADDING.dp),
     ) {
-        if (message.prompt.value.isNotEmpty())
-            TextMessage(message.prompt.value, message.createdAt, query, true)
-
-        if (message.response.isNotEmpty()) {
-            TextMessage(message.response, message.createdAt, query, false)
-        }
+        TextMessage(message.text, message.createdAt, query, message.author == MessageAuthor.Me)
     }
 }
 
