@@ -1,23 +1,25 @@
 package com.matin.noora.core.data
 
+import android.util.Log
 import androidx.collection.LruCache
 import com.matin.noora.R
 import com.matin.noora.core.data.di.IoDispatcher
 import com.matin.noora.core.data.local.MessageDao
 import com.matin.noora.core.data.remote.CharacterNetwork
-import com.matin.noora.core.data.remote.NooraApi
 import com.matin.noora.core.data.remote.MessageQueue
+import com.matin.noora.core.data.remote.NooraApi
+import com.matin.noora.core.data.remote.model.MessageRequestNetwork
 import com.matin.noora.core.domain.model.ChatCharacterItem
 import com.matin.noora.core.domain.model.Message
-import com.matin.noora.core.domain.model.MessageFactory.createMessage
+import com.matin.noora.core.domain.model.MessageAuthor
 import com.matin.noora.core.domain.model.MessageState
-import com.matin.noora.core.domain.model.Prompt
 import com.matin.noora.core.domain.model.Tool
 import com.matin.noora.core.domain.model.toDomain
 import com.matin.noora.core.domain.model.toEntity
 import com.matin.noora.core.domain.repository.AIRepository
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
@@ -30,6 +32,7 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
+import javax.inject.Singleton
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
@@ -39,7 +42,7 @@ class AIRepositoryImpl @Inject constructor(
     private val messageQueue: MessageQueue,
     private val appScope: CoroutineScope,
     @IoDispatcher val ioDispatcher: CoroutineDispatcher
-) : AIRepository {
+): AIRepository {
 
     private val cache = LruCache<String, List<Message>>(maxSize = 200 * 1024)
 
@@ -51,24 +54,64 @@ class AIRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun insertToDb(prompt: Prompt, categoryId: String) =
-        withContext(ioDispatcher) {
+    override fun sendMessage(message: Message) {
+        appScope.launch {
             try {
-                val message = createMessage(prompt, categoryId)
-                messageDao.insertMessage(
-                    message.toEntity(MessageState.PENDING)
-                )
+                insertToDb(message.copy(state = MessageState.PENDING))
 
-                messageQueue.enqueue(message.id)
+                val response = sendToServer(message)
+
+                if (response != null) {
+                    updateMessageState(message.id, MessageState.DONE)
+
+                    insertToDb(response.copy(state = MessageState.DONE))
+                } else {
+                    updateMessageState(message.id, MessageState.FAILED)
+                }
             } catch (e: Exception) {
-                e.printStackTrace()
+                updateMessageState(message.id, MessageState.FAILED)
             }
         }
-
-    override fun hasPendingMessage(): Flow<Boolean> {
-//        TODO("Not yet implemented")
-        return flowOf(false)
     }
+
+    private suspend fun insertToDb(message: Message) = withContext(ioDispatcher) {
+        try {
+            messageDao.insertMessage(
+                message.toEntity()
+            )
+        } catch (e: Exception) {
+            Log.e("Repository", "Failed to insert to db msg id: ${message.id}")
+        }
+    }
+
+    private fun updateMessageState(messageId: String, newState: MessageState) {
+        try {
+            messageDao.updateMessageState(messageId, newState)
+        } catch (e: Exception) {
+            Log.e("Repository", "Failed to update message id: ${messageId}")
+        }
+    }
+
+    override fun isMessagePending(): Flow<Boolean> = messageDao.hasPendingMessages()
+
+    private suspend fun sendToServer(message: Message): Message? =
+        withContext(ioDispatcher) {
+            try {
+                val networkRequest =
+                    MessageRequestNetwork(text = message.text, categoryId = message.categoryId)
+                // val response =   nooraApi.sendMessage(networkRequest)
+                delay(1000)
+
+                // Fake message to test
+                Message(
+                    text = "Server response to msg",
+                    author = MessageAuthor.Server,
+                    categoryId = message.categoryId
+                )
+            } catch (e: Exception) {
+                null
+            }
+        }
 
     override fun getChatMessages(categoryId: String): Flow<List<Message>> {
         return messageDao.getAllMessages(categoryId).distinctUntilChanged()
