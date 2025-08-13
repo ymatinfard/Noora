@@ -52,17 +52,17 @@ class MessageQueue @Inject constructor(
         try {
             val response = genAIApi.sendMessage(message.toDomain().toNetwork())
 
-            updateMessageState(message.id, response.text, MessageState.RECEIVED)
+            updateMessageState(message.id, MessageState.DONE)
         } catch (e: Exception) {
             try {
-                updateMessageState(message.id, response = "", MessageState.FAILED)
+                updateMessageState(message.id, MessageState.FAILED)
             } catch (e: Exception) {
                 //           Log.e("MessageRepository", "Failed to update message state in DB")
             }
         }
     }
 
-    private fun updateMessageState(messageId: String, response: String, newState: MessageState) {
-        messageDao.updateMessageState(messageId, response, newState)
+    private fun updateMessageState(messageId: String, newState: MessageState) {
+        messageDao.updateMessageState(messageId, newState)
     }
 }

@@ -4,5 +4,5 @@ enum class MessageState {
     PENDING,
     SENT,
     FAILED,
-    RECEIVED,
+    DONE,
 }

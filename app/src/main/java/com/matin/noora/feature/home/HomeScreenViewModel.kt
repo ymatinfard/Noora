@@ -4,13 +4,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.matin.noora.core.common.Result
 import com.matin.noora.core.common.asResult
+import com.matin.noora.core.domain.model.Tool
 import com.matin.noora.core.domain.repository.AIRepository
 import com.matin.noora.feature.chat.ChatCharactersState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
-import com.matin.noora.core.domain.model.Tool
 
 @HiltViewModel
 class HomeScreenViewModel @Inject constructor(val repository: AIRepository): ViewModel() {
