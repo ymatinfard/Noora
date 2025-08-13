@@ -5,7 +5,6 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.matin.noora.core.domain.model.Message
-import com.matin.noora.core.domain.model.Prompt
 import com.matin.noora.core.domain.repository.AIRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -32,19 +31,11 @@ class ChatViewModel @Inject constructor(
     init {
         loadUsername(userName)
         loadMessages(categoryId)
-        checkPendingMessage()
+        checkMessageStatus()
     }
 
     private fun loadUsername(userName: String) {
         _uiState.update { it.copy(userName = userName.capitalizeFirstLetter()) }
-    }
-
-    private fun checkPendingMessage() {
-        viewModelScope.launch {
-            aiRepository.hasPendingMessage().collect { hasPendingMessages ->
-                _uiState.update { it.copy(isMsgPending = hasPendingMessages) }
-            }
-        }
     }
 
     private fun loadMessages(categoryId: String) {
@@ -70,13 +61,21 @@ class ChatViewModel @Inject constructor(
     private fun onSendMessage() {
         val currentText = _uiState.value.currentMessage.trim()
         if (currentText.isNotBlank()) {
-            viewModelScope.launch {
-                aiRepository.insertToDb(Prompt(value = currentText), categoryId)
+                aiRepository.sendMessage(Message(text = currentText, categoryId = categoryId))
                 // Clear input field after sending
                 _uiState.update {
                     it.copy(
                         currentMessage = "",
                     )
+                }
+        }
+    }
+
+    private fun checkMessageStatus() {
+        viewModelScope.launch {
+            aiRepository.isMessagePending().collectLatest { isPending ->
+                _uiState.update {
+                    it.copy(isMsgPending = isPending)
                 }
             }
         }

@@ -1,5 +1,6 @@
 package com.matin.noora.feature.chat
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.consumeWindowInsets
@@ -81,15 +82,16 @@ fun ChatScreen(
                 searchQuery = newQuery
             })
         Column(modifier = Modifier.weight(1f)) {
-            MessageList(
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(horizontal = 12.dp),
-                messages = state.messages,
-                listState = listState,
-                isMsgPending = state.isMsgPending,
-                query = searchQuery,
-            )
+            Box(modifier = Modifier.weight(1f)) {
+                MessageList(
+                    modifier = Modifier
+                        .padding(horizontal = 12.dp),
+                    messages = state.messages,
+                    listState = listState,
+                    isMsgPending = state.isMsgPending,
+                    query = searchQuery,
+                )
+            }
 
             MessageInputBar(
                 message = state.currentMessage,

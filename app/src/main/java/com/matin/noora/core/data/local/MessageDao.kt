@@ -20,8 +20,8 @@ interface MessageDao {
     @Query("SELECT * From messages Where id = :id")
     fun getMessageById(id: String): MessageEntity?
 
-    @Query("UPDATE messages SET state = :newState, response = :response WHERE id = :messageId")
-    fun updateMessageState(messageId: String, response: String, newState: MessageState)
+    @Query("UPDATE messages SET state = :newState WHERE id = :messageId")
+    fun updateMessageState(messageId: String, newState: MessageState)
 
     @Query("DELETE FROM messages")
     fun deleteAllMessages()
