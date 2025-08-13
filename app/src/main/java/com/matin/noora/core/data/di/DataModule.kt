@@ -7,6 +7,7 @@ import com.matin.noora.core.data.local.ChatLocalRepositoryImpl
 import com.matin.noora.core.data.local.SettingsRepositoryImpl
 import com.matin.noora.core.data.AIRepositoryImpl
 import com.matin.noora.core.data.local.MessageDao
+import com.matin.noora.core.data.remote.AuthInterceptor
 import com.matin.noora.core.data.remote.NooraApi
 import com.matin.noora.core.domain.repository.AIRepository
 import com.matin.noora.core.domain.repository.ChatLocalRepository
@@ -23,6 +24,7 @@ import javax.inject.Singleton
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
+import okhttp3.OkHttpClient
 import javax.inject.Qualifier
 
 @Module
@@ -47,11 +49,19 @@ interface DataBindModule {
 object DataProviderModule {
 
     @Provides
+    fun provideHttpClient(authInterceptor: AuthInterceptor): OkHttpClient {
+        return OkHttpClient.Builder()
+            .addInterceptor(authInterceptor)
+            .build()
+    }
+
+    @Provides
     @Singleton
-    fun provideNooraApi(): NooraApi {
+    fun provideNooraApi(httpClient: OkHttpClient): NooraApi {
         return Retrofit.Builder()
             .baseUrl("https://noora.com/ai/")
             .addConverterFactory(GsonConverterFactory.create())
+            .client(httpClient)
             .build()
             .create(NooraApi::class.java)
     }
